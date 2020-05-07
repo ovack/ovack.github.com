@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/base/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/base/favicon.jpg">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ovack.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="这篇文档在官方文档改版之后已经被删除了，保留下来是因为我觉得可以帮助我们更好的理解Docker。  Docker 概述Docker is an open platform for developing, shipping, and running applications. Docker enables you to separate your applications from your in">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker 概览">
+<meta property="og:url" content="https://ovack.com/2016/10/20/Docker-Overview/index.html">
+<meta property="og:site_name" content="ovack">
+<meta property="og:description" content="这篇文档在官方文档改版之后已经被删除了，保留下来是因为我觉得可以帮助我们更好的理解Docker。  Docker 概述Docker is an open platform for developing, shipping, and running applications. Docker enables you to separate your applications from your in">
+<meta property="og:image" content="https://ovack.com/images/engine-components-flow.png">
+<meta property="og:image" content="https://ovack.com/images/architecture.svg">
+<meta property="article:published_time" content="2016-10-20T14:52:34.000Z">
+<meta property="article:modified_time" content="2016-10-20T14:52:35.000Z">
+<meta property="article:author" content="ovack">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://ovack.com/images/engine-components-flow.png">
+
+<link rel="canonical" href="https://ovack.com/2016/10/20/Docker-Overview/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>Docker 概览 | ovack</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-49858833-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-49858833-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">ovack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">笔记本</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">3</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">14</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://ovack.com/2016/10/20/Docker-Overview/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/base/avatar.jpg">
+      <meta itemprop="name" content="ovack">
+      <meta itemprop="description" content="只是个记事本～～～🗒">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ovack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Docker 概览
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2016-10-20 22:52:34 / Modified: 22:52:35" itemprop="dateCreated datePublished" datetime="2016-10-20T22:52:34+08:00">2016-10-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>这篇文档在官方文档改版之后已经被删除了，保留下来是因为我觉得可以帮助我们更好的理解Docker。</p>
+</blockquote>
+<h1 id="Docker-概述"><a href="#Docker-概述" class="headerlink" title="Docker 概述"></a>Docker 概述</h1><p>Docker is an open platform for developing, shipping, and running applications. Docker enables you to separate your applications from your infrastructure so you can deliver software quickly. With Docker, you can manage your infrastructure in the same ways you manage your applications. By taking advantage of Docker’s methodologies for shipping, testing, and deploying code quickly, you can significantly reduce the delay between writing code and running it in production.</p>
+<p>Docker是一个为开发，托管，运行应用的开源的平台。Docker允许你从你的基础设施上拆分你的应用，因此你可以进行快速分发你的软件。通过Docker，你可以像管理你的应用那样管理你的基础设施。得益于Docker可以快速的进行托管，测试和部署，你可以显著的节省从编写代码到发布产品所需的时间。</p>
+<a id="more"></a>
+
+<h2 id="What-is-the-Docker-platform"><a href="#What-is-the-Docker-platform" class="headerlink" title="What is the Docker platform?"></a>What is the Docker platform?</h2><p>Docker provides the ability to package and run an application in a loosely isolated environment called a container. The isolation and security allow you to run many containers simultaneously on a given host. Because of the lightweight nature of containers, which run without the extra load of a hypervisor, you can run more containers on a given hardware combination than if you were using virtual machines.</p>
+<p>Docker provides tooling and a platform to manage the lifecycle of your containers:</p>
+<ul>
+<li>Encapsulate your applications (and supporting components) into Docker containers</li>
+<li>Distribute and ship those containers to your teams for further development and testing</li>
+<li>Deploy those applications to your production environment, whether it is in a local data center or the Cloud</li>
+</ul>
+<p>Docker允许你在一个轻量隔离的容器中打包和运行应用。隔离和安全允许你在同一台机器上运行多个容器。由于容器天生的轻量级，相比虚拟机运行时不需要加载更多的东西，所以你可以在相同的硬件条件下运行更多数量的容器。</p>
+<p>Docker为你应用的整个生命周期提供工具和平台：</p>
+<ul>
+<li>把你的应用（包含依赖）打包进容器。</li>
+<li>为了未来的开发和测试分发和托管这些容器给你的团队。</li>
+<li>部署这些应用到你的生产环境，无论它是本地的数据中心还是在云端。</li>
+</ul>
+<h2 id="What-is-Docker-Engine"><a href="#What-is-Docker-Engine" class="headerlink" title="What is Docker Engine?"></a>What is Docker Engine?</h2><p><em>Docker Engine</em> is a client-server application with these major components:</p>
+<ul>
+<li><p>A server which is a type of long-running program called a daemon process.</p>
+</li>
+<li><p>A REST API which specifies interfaces that programs can use to talk to the daemon and instruct it what to do.</p>
+</li>
+<li><p>A command line interface (CLI) client.</p>
+</li>
+</ul>
+<p>Docker引擎是一个包含以下几个重要组成部分的client-server应用：</p>
+<ul>
+<li>server：一个叫做守护进程的长时间运行的程序。</li>
+<li>REST API：和守护进程通信并告诉它该做什么的具体接口。</li>
+<li>client： 命令行（CLI）</li>
+</ul>
+<p><img src="/images/engine-components-flow.png" alt=""></p>
+<p>The CLI uses the Docker REST API to control or interact with the Docker daemon through scripting or direct CLI commands. Many other Docker applications use the underlying API and CLI.</p>
+<p>The daemon creates and manages Docker <em>objects</em>, such as images, containers, networks, and data volumes.</p>
+<p>CLI通过Docker REST API使用脚本或者直接的CLI命令控制器Docker守护进程。许多其他的Docker应用使用底层的API和CLI。</p>
+<p>守护进程创建和管理Docker对象，比如镜像，容器，网络，和数据卷。</p>
+<blockquote>
+<p><strong>Note:</strong> Docker is licensed under the open source Apache 2.0 license.</p>
+<p>注意：Docker在开源 Apache 2.0 授权之下</p>
+</blockquote>
+<h2 id="What-can-I-use-Docker-for"><a href="#What-can-I-use-Docker-for" class="headerlink" title="What can I use Docker for?"></a>What can I use Docker for?</h2><p><em>Fast, consistent delivery of your applications</em></p>
+<p>Docker can streamline the development lifecycle by allowing developers to work in standardized environments using local containers which provide your applications and services. You can also integrate Docker into your continuous integration and continuous deployment (CI/CD) workflow.</p>
+<p>Consider the following example scenario. Your developers write code locally and share their work with their colleagues using Docker containers. They can use Docker to push their applications into a test environment and execute automated and manual tests. When developers find problems, they can fix them in the development environment and redeploy them to the test environment for testing. When testing is complete, getting the fix to the customer is as simple as pushing the updated image to the production environment.</p>
+<p><em>快速，一致的分发你的应用</em></p>
+<p>开发者通过使用标准统一的本地化Docker容器使开发工作流程化。你可以将Docker统一到你的持续集成和持续开发工作流程中。</p>
+<p>想象一下以下示例情景。你的开发人员通过容器向他的同事分享他的工作成果。他们可以把她们的应用推送到测试环境进行自动化测试。当开发者发现问题，然后他们在开发环境修复这些问题并重新部署到测试环境进行测试。当测试通过，推送到客户那里就仅仅是简单的推送到生产环境。</p>
+<p><em>Responsive deployment and scaling</em></p>
+<p>Docker’s container-based platform allows for highly portable workloads. Docker containers can run on a developer’s local host, on physical or virtual machines in a data center, in the Cloud, or in a mixture of environments.</p>
+<p>Docker’s portability and lightweight nature also make it easy to dynamically manage workloads, scaling up or tearing down applications and services as business needs dictate, in near real time.</p>
+<p><em>响应式部署和扩充</em></p>
+<p>Docker基于容器的平台允许高可移植工作量。Docker容器可以运行在开发者自己的本地机器上，在物理或虚拟的数据中心，在云端，或者在混合环境中。</p>
+<p>为了业务需求，Docker的可移植性和天然的轻量可以很方便快速的动态管理负载，扩充或拆除业务。</p>
+<p><em>Running more workloads on the same hardware</em></p>
+<p>Docker is lightweight and fast. It provides a viable, cost-effective alternative to hypervisor-based virtual machines, allowing you to use more of your compute capacity to achieve your business goals. This is useful in high density environments and for small and medium deployments where you need to do more with fewer resources.</p>
+<p><em>在相同的硬件上完成更多的工作量</em></p>
+<p>Docker是轻量高效的。它提供一个可行的，花费少的虚拟机替代品，允许你使用你的电脑实现更多的商业价值。这对于在更少的资源上运行更多的中小型应用非常有用。</p>
+<h2 id="What-is-Docker’s-architecture"><a href="#What-is-Docker’s-architecture" class="headerlink" title="What is Docker’s architecture?"></a>What is Docker’s architecture?</h2><p>Docker uses a client-server architecture. The Docker <em>client</em> talks to the Docker <em>daemon</em>, which does the heavy lifting of building, running, and distributing your Docker containers. The Docker client and daemon <em>can</em> run on the same system, or you can connect a Docker client to a remote Docker daemon. The Docker client and daemon communicate via sockets or through a REST API.</p>
+<p>Docker 使用client-server的构建方式。_client_和_Docker_守护进程进行通讯，来进行构建，运行，和支配你的Docker容器。Docker的client和守护进程可以运行在相同的系统上，或者你可以Docker client连接远程的Docker守护进程。Docker client通过REST API 使用sockets和守护进程进行通讯。</p>
+<p><img src="/images/architecture.svg" alt=""></p>
+<h3 id="The-Docker-daemon"><a href="#The-Docker-daemon" class="headerlink" title="The Docker daemon"></a>The Docker daemon</h3><p>The Docker daemon runs on a host machine. The user uses the Docker client to interact with the daemon.</p>
+<p>Docekr守护进程运行在主机上。用户通过Docker client和守护进程通讯。</p>
+<h3 id="The-Docker-client"><a href="#The-Docker-client" class="headerlink" title="The Docker client"></a>The Docker client</h3><p>The Docker client, in the form of the <code>docker</code> binary, is the primary user interface to Docker. It accepts commands and configuration flags from the user and communicates with a Docker daemon. One client can even communicate with multiple unrelated daemons.</p>
+<p>Docker client是<code>docker</code>的组成部分之一，是Docker主要的用户界面。主要接受从用户发出的命令和配置标识来和Docker守护进程通讯。一个client可以和多个不相关的守护进程通讯。</p>
+<h3 id="Inside-Docker"><a href="#Inside-Docker" class="headerlink" title="Inside Docker"></a>Inside Docker</h3><p>To understand Docker’s internals, you need to know about <em>images</em>, <em>registries</em>, and <em>containers</em>.</p>
+<p>要了解Docker的里面，你需要知道镜像，仓库，和容器。</p>
+<h4 id="Docker-images"><a href="#Docker-images" class="headerlink" title="Docker images"></a>Docker images</h4><p>A Docker <em>image</em> is a read-only template with instructions for creating a Docker container. For example, an image might contain an Ubuntu operating system with Apache web server and your web application installed. You can build or update images from scratch or download and use images created by others. An image may be based on, or may extend, one or more other images. A docker image is described in text file called a <em>Dockerfile</em>, which has a simple, well-defined syntax. For more details about images, see <a href="https://docs.docker.com/engine/understanding-docker/#how-does-a-docker-image-work" target="_blank" rel="noopener">How does a Docker image work?</a>.</p>
+<p>Docker images are the <strong>build</strong> component of Docker.</p>
+<p>Docker镜像就是创建容器的只读模板。举个栗子，一个包含Ubuntu系统，Apache，和你的web应用的镜像。你可以通过下载或拼凑创建或更新容器，你也可以使用别人创建的镜像。一个镜像可能基于或者扩展一个或其他几个镜像。每个docker镜像通过简单并具有完整规则的_Dockerfile_来描述。更多关于镜像的信息，查看<a href="#how-does-a-docker-image-work"> Docker镜像是怎么工作的？</a></p>
+<h4 id="Docker-containers"><a href="#Docker-containers" class="headerlink" title="Docker containers"></a>Docker containers</h4><p>A Docker container is a runnable instance of a Docker image. You can run, start, stop, move, or delete a container using Docker API or CLI commands. When you run a container, you can provide configuration metadata such as networking information or environment variables. Each container is an isolated and secure application platform, but can be given access to resources running in a different host or container, as well as persistent storage or databases. For more details about containers, see <a href="https://docs.docker.com/engine/understanding-docker/#how-does-a-container-work" target="_blank" rel="noopener">How does a container work?</a>.</p>
+<p>Docker containers are the <strong>run</strong> component of Docker.</p>
+<p>Docker容器是Docker镜像的一个运行实例。你可以使用Docker的API或CLI命令行运行，开始，停止，移动或删除容器。当你运行一个容器，你可以提供配置元数据比如网络信息或环境变量。每一个容器就是一个独立和安全的应用平台，但是它可以使资源运行在不同的主机或容器，比如独立的存储或数据库。更多关于容器的介绍，查看：<a href="#how-does-a-container-work">容器是怎么工作的？</a></p>
+<h4 id="Docker-registries"><a href="#Docker-registries" class="headerlink" title="Docker registries"></a>Docker registries</h4><p>A docker registry is a library of images. A registry can be public or private, and can be on the same server as the Docker daemon or Docker client, or on a totally separate server. For more details about registries, see <a href="https://docs.docker.com/engine/understanding-docker/#how-does-a-docker-registry-work" target="_blank" rel="noopener">How does a Docker registry work?</a></p>
+<p>Docker registries are the <strong>distribution</strong> component of Docker.</p>
+<p>一个Docker仓库就是镜像的图书馆。一个仓库既可以是公开的也可以是私有的，并且可以作为Docker守护进程或Docker客户端在同一服务器或独立的服务器上。更多关于仓库的细节，查看 <a href="#how-does-a-docker-registry-work">Docker是怎么工作的？</a></p>
+<h4 id="Docker-services"><a href="#Docker-services" class="headerlink" title="Docker services"></a>Docker services</h4><p>A Docker <em>service</em> allows a <em>swarm</em> of Docker nodes to work together, running a defined number of instances of a replica task, which is itself a Docker image. You can specify the number of concurrent replica tasks to run, and the swarm manager ensures that the load is spread evenly across the worker nodes. To the consumer, the Docker service appears to be a single application. Docker Engine supports swarm mode in Docker 1.12 and higher.</p>
+<p>Docker services are the <strong>scalability</strong> component of Docker.</p>
+<p>Docker服务支持多个Docker节点协同的集群工作，运行一个定义的副本任务，它们本身就是一个Docker镜像。你可以指定同时运行任务的数量，并且集群管理确保压力被分散到各个工作节点。对于顾客，Docker服务显示为单个应用。Docker引擎支持集群在Docker1.12或更高的版本。</p>
+<p>Docker服务的可扩展性是Docker的重要性能之一。</p>
+<h3 id="How-does-a-Docker-image-work"><a href="#How-does-a-Docker-image-work" class="headerlink" title="How does a Docker image work?"></a>How does a Docker image work?</h3><p>Docker images are read-only templates from which Docker containers are instantiated. Each image consists of a series of layers. Docker uses <a href="http://en.wikipedia.org/wiki/UnionFS" target="_blank" rel="noopener">union file systems</a> to combine these layers into a single image. Union file systems allow files and directories of separate file systems, known as branches, to be transparently overlaid, forming a single coherent file system.</p>
+<p>Docker镜像是从Docker容器中实例化的只读模板。每个镜像由一系列的层组成。Docker使用联合文件系统把这些层组成单个镜像。联合文件系统可以使像分支这样的属于独立文件系统的文件和目录叠加形成一个独立一致的文件系统。</p>
+<p>These layers are one of the reasons Docker is so lightweight. When you change a Docker image, such as when you update an application to a new version, a new layer is built and replaces only the layer it updates. The other layers remain intact. To distribute the update, you only need to transfer the updated layer. Layering speeds up distribution of Docker images. Docker determines which layers need to be updated at runtime.</p>
+<p>这些层是Docker如此轻量的原因之一。当你改变了你的Docker镜像，比如当你更新你的应用到一个新的版本，Docker仅仅新构建一个层去替换需要更新的层。其他的层保持不变。要分发这个更新，你只需要传输更新过的层就可以了。分层加速了Docker镜像的分发。Docker在运行时很明确的知道哪些层需要更新。</p>
+<p>An image is defined in a Dockerfile. Every image starts from a base image, such as <code>ubuntu</code>, a base Ubuntu image, or <code>fedora</code>, a base Fedora image. You can also use images of your own as the basis for a new image, for example if you have a base Apache image you could use this as the base of all your web application images. The base image is defined using the <code>FROM</code> keyword in the dockerfile.</p>
+<p>一个镜像通个Dockerfile来定义。每一个镜像开始于基础镜像，比如 <code>ubuntu</code>一个基于Ubuntu的镜像，或者是<code>fedora</code>一个基于Fedora的镜像。你也可以使用你自己的基础组件作为新的镜像，比如你有一个基于Apache的镜像，你可以使用它作为你所有web应用的基础镜像。基础镜像使用<code>FROM</code>关键词在dockerfile中定义</p>
+<blockquote>
+<p><strong>Note:</strong> <a href="https://hub.docker.com/" target="_blank" rel="noopener">Docker Hub</a> is a public registry and stores images.</p>
+<p>注意：<a href="https://hub.docker.com/" target="_blank" rel="noopener">Docker Hub</a> 是一个存储镜像的公共仓库。</p>
+</blockquote>
+<p>The docker image is built from the base image using a simple, descriptive set of steps we call <em>instructions</em>, which are stored in a <code>Dockerfile</code>. Each instruction creates a new layer in the image. Some examples of Dockerfile instructions are:</p>
+<ul>
+<li>Specify the base image (<code>FROM</code>)</li>
+<li>Specify the maintainer (<code>MAINTAINER</code>)</li>
+<li>Run a command (<code>RUN</code>)</li>
+<li>Add a file or directory (<code>ADD</code>)</li>
+<li>Create an environment variable (<code>ENV</code>)</li>
+<li>What process to run when launching a container from this image (<code>CMD</code>)</li>
+</ul>
+<p>Docker镜像通过存储在Dockerfile中一系列简单，我们称之为指令的描述性设定构建。每一条指令在镜像中创建一个新的层。一些Dockerfile指令比如：</p>
+<ul>
+<li>指定基础镜像(<code>FROM</code>)</li>
+<li>指定维护(<code>MAINTAINER</code>)</li>
+<li>运行一个命令(<code>RUN</code>)</li>
+<li>添加一个文件或目录(<code>ADD</code>)</li>
+<li>创建一个环境变量(<code>ENV</code>)</li>
+<li>当从这个镜像中运行一个容器时运行哪个进程 (<code>CMD</code>)</li>
+</ul>
+<p>Docker reads this <code>Dockerfile</code> when you request a build of an image, executes the instructions, and returns the image.</p>
+<p>Docker读取<code>Dockerfile</code> 当你请求构建一个镜像，执行指令，返回镜像。</p>
+<h3 id="How-does-a-Docker-registry-work"><a href="#How-does-a-Docker-registry-work" class="headerlink" title="How does a Docker registry work?"></a>How does a Docker registry work?</h3><p>A Docker registry stores Docker images. After you build a Docker image, you can <em>push</em> it to a public registry such as<a href="https://hub.docker.com/" target="_blank" rel="noopener">Docker Hub</a> or to a private registry running behind your firewall. You can also search for existing images and pull them from the registry to a host.</p>
+<p>一个Docker仓库保存着Docker镜像。在你创建一个Docker镜像之后，你可以把它推送到像<a href="https://hub.docker.com/" target="_blank" rel="noopener">Docker Hub </a>一样的公共仓库或运行在你的防火墙之下的私有仓库.你可以搜索已经存在的镜像并且把它们从一个仓库推送到主机上。</p>
+<p><a href="http://hub.docker.com/" target="_blank" rel="noopener">Docker Hub</a> is a public Docker registry which serves a huge collection of existing images and allows you to contribute your own. For more information, go to <a href="https://docs.docker.com/registry/overview/" target="_blank" rel="noopener">Docker Registry</a> and <a href="https://docs.docker.com/docker-trusted-registry/overview/" target="_blank" rel="noopener">Docker Trusted Registry</a>.</p>
+<p><a href="http://hub.docker.com/" target="_blank" rel="noopener">Docker Hub</a> 是一个存着大量镜像并允许推送镜像的公开的Docker仓库。了解更多，去<a href="https://docs.docker.com/registry/overview/" target="_blank" rel="noopener">Docker Registry</a> 和 Docker Trusted Registry 。</p>
+<p><a href="http://store.docker.com/" target="_blank" rel="noopener">Docker store</a> allows you to buy and sell Docker images. For image, you can buy a Docker image containing an application or service from the software vendor, and use the image to deploy the application into your testing, staging, and production environments, and upgrade the application by pulling the new version of the image and redeploying the containers. Docker Store is currently in private beta.</p>
+<p><a href="http://store.docker.com/" target="_blank" rel="noopener">Docker store</a>允许你买卖Docker镜像。你可以从软件商那里购买一个包含应用和服务的镜像，然后使用这个镜像部署你的应用到你的测试，生产环境，通过推送新的镜像升级你的应用并重新部署容器。Docker商店目前是测试版本。</p>
+<h3 id="How-does-a-container-work"><a href="#How-does-a-container-work" class="headerlink" title="How does a container work?"></a>How does a container work?</h3><p>A container uses the host machine’s Linux kernel, and consists of any extra files you add when the image is created, along with metadata associated with the container at creation or when the container is started. Each container is built from an image. The image defines the container’s contents, which process to run when the container is launched, and a variety of other configuration details. The Docker image is read-only. When Docker runs a container from an image, it adds a read-write layer on top of the image (using a UnionFS as we saw earlier) in which your application runs.</p>
+<p>容器使用宿主机上的Linux内核和用户添加的文件创建，开启或运行时和metadata一起工作。每一个容器都来自一个镜像。镜像定义了容器的内容，运行什么进程，和个性化的配置细节。Docker镜像是只读的。当Docker从镜像上开启一个容器时，它会在镜像的最顶层创建并添加（使用前面提到的联合文件系统）你的应用层。</p>
+<h4 id="What-happens-when-you-run-a-container"><a href="#What-happens-when-you-run-a-container" class="headerlink" title="What happens when you run a container?"></a>What happens when you run a container?</h4><p>When you use the <code>docker run</code> CLI command or the equivalent API, the Docker Engine client instructs the Docker daemon to run a container. This example tells the Docker daemon to run a container using the <code>ubuntu</code> Docker image, to remain in the foreground in interactive mode (<code>-i</code>), and to run the <code>/bin/bash</code> command.</p>
+<p>当你执行<code>docker run</code>命令或相应的api，Docker引擎客户端命令Docker守护进程运行一个容器。这个例子告诉Docker守护进程运行一个<code>ubuntu</code>Docker 镜像，开启交互模式（<code>-i</code>），并且运行<code>/bin/bash</code>命令</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ docker run -i -t ubuntu /bin/bash</span><br></pre></td></tr></table></figure>
+
+<p>When you run this command, Docker Engine does the following:</p>
+<ol>
+<li><p><strong>Pulls the **<code>ubuntu</code></strong> image:** Docker Engine checks for the presence of the <code>ubuntu</code> image. If the image already exists locally, Docker Engine uses it for the new container. Otherwise, then Docker Engine pulls it from <a href="https://hub.docker.com/" target="_blank" rel="noopener">Docker Hub</a>.</p>
+</li>
+<li><p><strong>Creates a new container:</strong> Docker uses the image to create a container.</p>
+</li>
+<li><p><strong>Allocates a filesystem and mounts a read-write **</strong><em>layer</em><strong>**:</strong> The container is created in the file system and a read-write layer is added to the image.</p>
+</li>
+<li><p><strong>Allocates a network / bridge interface:</strong> Creates a network interface that allows the Docker container to talk to the local host.</p>
+</li>
+<li><p><strong>Sets up an IP address:</strong> Finds and attaches an available IP address from a pool.</p>
+</li>
+<li><p><strong>Executes a process that you specify:</strong> Executes the <code>/bin/bash</code> executable.</p>
+</li>
+<li><p><strong>Captures and provides application output:</strong> Connects and logs standard input, outputs and errors for you to see how your application is running, because you requested interactive mode.</p>
+</li>
+</ol>
+<p>当你运行这条命令，Docker引擎做了以下几件事：</p>
+<ol>
+<li><strong>拉取</strong><code>ubuntu</code><strong>镜像</strong>： Docker引擎检查<code>ubuntu</code>镜像是否存在。如果本地已经有这个镜像，Docker引擎使用它创建新的容器。如果没有，然后Docker引擎就从<a href="https://hub.docker.com/" target="_blank" rel="noopener">Docker Hub</a>上拉取。</li>
+<li><strong>创建一个新的容器</strong>：Docker使用镜像创建一个容器。</li>
+<li><strong>分配文件系统并且挂载一个只读层</strong>：容器被创建在文件系统并且只读层被添加到镜像上。</li>
+<li><strong>分配网络/桥接接口</strong>：创建一份网络接口使Docker可以和本地主机通讯。</li>
+<li><strong>设置IP地址</strong>：从连接池获取可用的IP地址。</li>
+<li><strong>执行你指定的进程</strong>：执行<code>/bin/bash</code>。</li>
+<li><strong>捕获并提供应用输出</strong>：由于你开启交互模式，Docker提供标准的日志输入输出和错误，让你知道你的应用的运行状态。</li>
+</ol>
+<p>Your container is now running. You can manage and interact with it, use the services and applications it provides, and eventually stop and remove it.</p>
+<p>你的容器现在正在运行。你可以使用它提供的服务和应用管理并控制它，并最终停止并删除它。</p>
+<h2 id="The-underlying-technology"><a href="#The-underlying-technology" class="headerlink" title="The underlying technology"></a>The underlying technology</h2><p>Docker is written in <a href="https://golang.org/" target="_blank" rel="noopener">Go</a> and takes advantage of several features of the Linux kernel to deliver its functionality.</p>
+<p>Docker使用<a href="https://golang.org/" target="_blank" rel="noopener">Go</a>语言编写,充分利用Linux内核的多个优势功能取实现其功能。</p>
+<h3 id="Namespaces"><a href="#Namespaces" class="headerlink" title="Namespaces"></a>Namespaces</h3><p>Docker uses a technology called <code>namespaces</code> to provide the isolated workspace called the <em>container</em>. When you run a container, Docker creates a set of <em>namespaces</em> for that container.</p>
+<p>Docker使用命名空间技术为容器提供隔离的工作环境。当你运行一个容器时，Docker为这个容器创建命名空间。</p>
+<p>These namespaces provide a layer of isolation. Each aspect of a container runs in a separate namespace and its access is limited to that namespace.</p>
+<p>这些命名空间提供一个隔离层。每个容器运行在独立的命名空间，且访问权限限定在命名空间里面。</p>
+<p>Docker Engine uses namespaces such as the following on Linux:</p>
+<ul>
+<li><strong>The **<code>pid</code></strong> namespace:** Process isolation (PID: Process ID).</li>
+<li><strong>The **<code>net</code></strong> namespace:** Managing network interfaces (NET: Networking).</li>
+<li><strong>The **<code>ipc</code></strong> namespace:** Managing access to IPC resources (IPC: InterProcess Communication).</li>
+<li><strong>The **<code>mnt</code></strong> namespace:** Managing filesystem mount points (MNT: Mount).</li>
+<li><strong>The **<code>uts</code></strong> namespace:** Isolating kernel and version identifiers. (UTS: Unix Timesharing System).</li>
+</ul>
+<p>Docker使用的命名空间，如在Linux下面：</p>
+<ul>
+<li><code>pid</code>命名空间：进程隔离(PID: Process ID)。</li>
+<li><code>net</code>命名空间：网络接口管理 (NET: Networking)。</li>
+<li><code>ipc</code>命名空间：进程间通讯管理 (IPC: InterProcess Communication)。</li>
+<li><code>mnt</code>命名空间：文件系统挂载点管理(MNT: Mount)。</li>
+<li><code>uts</code>命名空间：隔离内核和版本标识符(UTS: Unix Timesharing System)。</li>
+</ul>
+<h3 id="Control-groups"><a href="#Control-groups" class="headerlink" title="Control groups"></a>Control groups</h3><p>Docker Engine on Linux also relies on another technology called <em>control groups</em> (<code>cgroups</code>). A cgroup limits an application to a specific set of resources. Control groups allow Docker Engine to share available hardware resources to containers and optionally enforce limits and constraints. For example, you can limit the memory available to a specific container.</p>
+<p>Docker引擎使用了Linux另一项叫做控制组的技术（<code>cgroups</code>）。一个控制组限定程序访问指定的资源。控制组允许Docker引擎分享可用的硬件资源可选强制限制和约束给容器。比如你可以限制指定容器的内存大小。</p>
+<h3 id="Union-file-systems"><a href="#Union-file-systems" class="headerlink" title="Union file systems"></a>Union file systems</h3><p>Union file systems, or UnionFS, are file systems that operate by creating layers, making them very lightweight and fast. Docker Engine uses UnionFS to provide the building blocks for containers. Docker Engine can use multiple UnionFS variants, including AUFS, btrfs, vfs, and DeviceMapper.</p>
+<p>联合文件系统是创建层的运转系统，使层非常轻量和快速。Docker引擎使用联合文件系统提供构建块给容器。Docker可以使用联合文件系统变体，比如 AUFS, btrfs, vfs, and DeviceMapper。</p>
+<h3 id="Container-format"><a href="#Container-format" class="headerlink" title="Container format"></a>Container format</h3><p>Docker Engine combines the namespaces, control groups, and UnionFS into a wrapper called a container format. The default container format is <code>libcontainer</code>. In the future, Docker may support other container formats by integrating with technologies such as BSD Jails or Solaris Zones.</p>
+<p>Docker引擎把命名空间，控制组，和联合文件系统包装进一个层这叫做容器格式化。默认的容器格式化叫做<code>libcontainer</code>。未来，Docker可能支持其他的容器格式化技术，比如BSD Jails 或 Solaris Zones。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wepay.jpeg" alt="ovack WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>ovack
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://ovack.com/2016/10/20/Docker-Overview/" title="Docker 概览">https://ovack.com/2016/10/20/Docker-Overview/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+        
+
+  <div class="followme">
+    <p>Welcome to my other publishing channels</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="https://twitter.com/OvackChen">
+            <span class="icon">
+              <i class="fab fa-twitter"></i>
+            </span>
+
+            <span class="label">Twitter</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/10/13/Installation-on-CentOs/" rel="prev" title="在centos上安装Docker">
+      <i class="fa fa-chevron-left"></i> 在centos上安装Docker
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/10/21/Installation-on-fedora/" rel="next" title="在fedora上安装Docker">
+      在fedora上安装Docker <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Docker-概述"><span class="nav-number">1.</span> <span class="nav-text">Docker 概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#What-is-the-Docker-platform"><span class="nav-number">1.1.</span> <span class="nav-text">What is the Docker platform?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#What-is-Docker-Engine"><span class="nav-number">1.2.</span> <span class="nav-text">What is Docker Engine?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#What-can-I-use-Docker-for"><span class="nav-number">1.3.</span> <span class="nav-text">What can I use Docker for?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#What-is-Docker’s-architecture"><span class="nav-number">1.4.</span> <span class="nav-text">What is Docker’s architecture?</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#The-Docker-daemon"><span class="nav-number">1.4.1.</span> <span class="nav-text">The Docker daemon</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#The-Docker-client"><span class="nav-number">1.4.2.</span> <span class="nav-text">The Docker client</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Inside-Docker"><span class="nav-number">1.4.3.</span> <span class="nav-text">Inside Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Docker-images"><span class="nav-number">1.4.3.1.</span> <span class="nav-text">Docker images</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Docker-containers"><span class="nav-number">1.4.3.2.</span> <span class="nav-text">Docker containers</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Docker-registries"><span class="nav-number">1.4.3.3.</span> <span class="nav-text">Docker registries</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Docker-services"><span class="nav-number">1.4.3.4.</span> <span class="nav-text">Docker services</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#How-does-a-Docker-image-work"><span class="nav-number">1.4.4.</span> <span class="nav-text">How does a Docker image work?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#How-does-a-Docker-registry-work"><span class="nav-number">1.4.5.</span> <span class="nav-text">How does a Docker registry work?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#How-does-a-container-work"><span class="nav-number">1.4.6.</span> <span class="nav-text">How does a container work?</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#What-happens-when-you-run-a-container"><span class="nav-number">1.4.6.1.</span> <span class="nav-text">What happens when you run a container?</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-underlying-technology"><span class="nav-number">1.5.</span> <span class="nav-text">The underlying technology</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Namespaces"><span class="nav-number">1.5.1.</span> <span class="nav-text">Namespaces</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Control-groups"><span class="nav-number">1.5.2.</span> <span class="nav-text">Control groups</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Union-file-systems"><span class="nav-number">1.5.3.</span> <span class="nav-text">Union file systems</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Container-format"><span class="nav-number">1.5.4.</span> <span class="nav-text">Container format</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ovack"
+      src="/images/base/avatar.jpg">
+  <p class="site-author-name" itemprop="name">ovack</p>
+  <div class="site-description" itemprop="description">只是个记事本～～～🗒</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ovack" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ovack" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:youfengtec@gmail.com" title="E-Mail → mailto:youfengtec@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/OvackChen" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;OvackChen" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ovack</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

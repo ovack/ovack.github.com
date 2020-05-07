@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/base/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/base/favicon.jpg">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ovack.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Red Hat Enterprise LinuxDocker支持Red Hat Enterprise Linux 7。这篇指南使用Docker官方管理的发行包和安装工具，确保你获得的是最新的Docker。如果你希望使用Red Hat-managed packages安装Docker，查阅你的Red Hat发行版本。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在redhat上安装Docker">
+<meta property="og:url" content="https://ovack.com/2016/10/12/Installation-on-redhat-enterprise-linux/index.html">
+<meta property="og:site_name" content="ovack">
+<meta property="og:description" content="Red Hat Enterprise LinuxDocker支持Red Hat Enterprise Linux 7。这篇指南使用Docker官方管理的发行包和安装工具，确保你获得的是最新的Docker。如果你希望使用Red Hat-managed packages安装Docker，查阅你的Red Hat发行版本。">
+<meta property="article:published_time" content="2016-10-12T14:51:54.000Z">
+<meta property="article:modified_time" content="2016-10-24T12:15:07.000Z">
+<meta property="article:author" content="ovack">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://ovack.com/2016/10/12/Installation-on-redhat-enterprise-linux/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>在redhat上安装Docker | ovack</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-49858833-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-49858833-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">ovack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">笔记本</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">3</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">14</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://ovack.com/2016/10/12/Installation-on-redhat-enterprise-linux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/base/avatar.jpg">
+      <meta itemprop="name" content="ovack">
+      <meta itemprop="description" content="只是个记事本～～～🗒">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ovack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在redhat上安装Docker
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-10-12 22:51:54" itemprop="dateCreated datePublished" datetime="2016-10-12T22:51:54+08:00">2016-10-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2016-10-24 20:15:07" itemprop="dateModified" datetime="2016-10-24T20:15:07+08:00">2016-10-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Red-Hat-Enterprise-Linux"><a href="#Red-Hat-Enterprise-Linux" class="headerlink" title="Red Hat Enterprise Linux"></a>Red Hat Enterprise Linux</h1><p>Docker支持Red Hat Enterprise Linux 7。这篇指南使用Docker官方管理的发行包和安装工具，确保你获得的是最新的Docker。如果你希望使用Red Hat-managed packages安装Docker，查阅你的Red Hat发行版本。</p>
+<a id="more"></a>
+
+<h2 id="Prerequisites"><a href="#Prerequisites" class="headerlink" title="Prerequisites"></a>Prerequisites</h2><p>Docker需要64位的操作系统和3.10以上的linux内核版本。<br>检查你当前的内核版本，打开终端使用 <code>uname -r</code> 命令打印你的内核版本：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ uname -r</span><br><span class="line">3.10.0-229.el7.x86_64</span><br></pre></td></tr></table></figure>
+
+<p>最后，我们非常推荐你更新整个系统。请记住，您的系统应该完全修补，已修复任何明确的内核错误。任何已报告的内核bug可能在最近的linux内核包中被修复。</p>
+<h2 id="Install-Docker-Engine"><a href="#Install-Docker-Engine" class="headerlink" title="Install Docker Engine"></a>Install Docker Engine</h2><p>这里有两种方式安装Docker Engine。你可以<a href="https://docs.docker.com/engine/installation/linux/rhel/#install-with-yum" target="_blank" rel="noopener">使用<code>yum</code>包管理器安装</a>。或者你可以使用 <code>curl</code> <a href="https://docs.docker.com/engine/installation/linux/rhel/#install-with-the-script" target="_blank" rel="noopener"><code>get.docker.com</code> site</a>。第二种方法运行一个安装脚本也是像<code>yum</code>包管理那样安装。</p>
+<h3 id="Install-with-yum"><a href="#Install-with-yum" class="headerlink" title="Install with yum"></a>Install with yum</h3><ol>
+<li><p>使用具有 <code>sudo</code> 或 <code>root</code> 权限的用户登陆你的系统。</p>
+</li>
+<li><p>确保你的已经安装的包都是最新的。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo yum update</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加 <code>yum</code> 源。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo tee /etc/yum.repos.d/docker.repo &lt;&lt;-<span class="string">'EOF'</span></span><br><span class="line">[dockerrepo]</span><br><span class="line">name=Docker Repository</span><br><span class="line">baseurl=https://yum.dockerproject.org/repo/main/centos/7/</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=https://yum.dockerproject.org/gpg</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装Docker。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo yum install docker-engine</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>开启服务。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo systemctl <span class="built_in">enable</span> docker.service</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>开启Docker 守护进程。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo systemctl start docker</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在容器中运行一个镜像来验证 <code>docker</code> 是否安装正确。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo docker run --rm hello-world</span><br><span class="line"></span><br><span class="line">Unable to find image <span class="string">'hello-world:latest'</span> locally</span><br><span class="line">latest: Pulling from library/hello-world</span><br><span class="line">c04b14da8d14: Pull complete</span><br><span class="line">Digest: sha256:0256e8a36e2070f7bf2d0b0763dbabdd67798512411de4cdcf9431a1feb60fd9</span><br><span class="line">Status: Downloaded newer image <span class="keyword">for</span> hello-world:latest</span><br><span class="line"></span><br><span class="line">Hello from Docker!</span><br><span class="line">This message shows that your installation appears to be working correctly.</span><br><span class="line"></span><br><span class="line">To generate this message, Docker took the following steps:</span><br><span class="line"> 1. The Docker client contacted the Docker daemon.</span><br><span class="line"> 2. The Docker daemon pulled the <span class="string">"hello-world"</span> image from the Docker Hub.</span><br><span class="line"> 3. The Docker daemon created a new container from that image <span class="built_in">which</span> runs the</span><br><span class="line">    executable that produces the output you are currently reading.</span><br><span class="line"> 4. The Docker daemon streamed that output to the Docker client, <span class="built_in">which</span> sent it</span><br><span class="line">    to your terminal.</span><br><span class="line"></span><br><span class="line">To try something more ambitious, you can run an Ubuntu container with:</span><br><span class="line"> $ docker run -it ubuntu bash</span><br><span class="line"></span><br><span class="line">Share images, automate workflows, and more with a free Docker Hub account:</span><br><span class="line"> https://hub.docker.com</span><br><span class="line"></span><br><span class="line">For more examples and ideas, visit:</span><br><span class="line"> https://docs.docker.com/engine/userguide/</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>如果你想添加HTTP代理，设置另一个存放Docker运行时文件目录或者磁盘，或者其他个性化设置，阅读我们Systemd文章<a href="https://docs.docker.com/engine/admin/systemd/" target="_blank" rel="noopener">customize your Systemd Docker daemon options</a>。</p>
+<h3 id="Install-with-the-script"><a href="#Install-with-the-script" class="headerlink" title="Install with the script"></a>Install with the script<a href="https://docs.docker.com/engine/installation/linux/rhel/#install-with-the-script" target="_blank" rel="noopener"></a></h3><ol>
+<li><p>使用具有 <code>sudo</code> 或 <code>root</code> 权限的用户登陆你的系统。</p>
+</li>
+<li><p>确保你的已经安装的包都是最新的。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo yum update</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>运行Docker安装脚本。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ curl -fsSL https://get.docker.com/ | sh</span><br></pre></td></tr></table></figure>
+
+<p> 这个脚本添加 <code>docker.repo</code>仓库和安装Docker。</p>
+</li>
+<li><p>开启服务。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo systemctl <span class="built_in">enable</span> docker.service</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>开启Docker守护进程。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo systemctl start docker</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在容器中运行一个镜像来验证 <code>docker</code> 是否安装正确。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo docker run hello-world</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>如果你想添加HTTP代理，设置另一个存放Docker运行时文件目录或者磁盘，或者其他个性化设置，阅读我们Systemd文章<a href="https://docs.docker.com/engine/admin/systemd/" target="_blank" rel="noopener">customize your Systemd Docker daemon options</a>。</p>
+<h2 id="Create-a-docker-group"><a href="#Create-a-docker-group" class="headerlink" title="Create a docker group"></a>Create a docker group<a href="https://docs.docker.com/engine/installation/linux/rhel/#create-a-docker-group" target="_blank" rel="noopener"></a></h2><p> <code>docker</code> 守护进程绑定在一个Unix socket 来代替TCP端口。 默认情况下 Unix socket 属于 <code>root</code> 用户和其它具有 <code>sudo</code> 权限的用户。因此，<code>docker</code> 守护进程总是使用<code>root</code> 用户运行。</p>
+<p>为避免每次使用 <code>docker</code> 命令都要添加<code>sudo</code>，创建一个叫做 <code>docker</code> 的Unix 用户组并使用它。当<code>docker</code> 守护进程启动，<code>docker</code> 用户组会分配Unix socket的读写权限。</p>
+<blockquote>
+<p><strong>警告</strong>：<code>docker</code> 用户组等同于 <code>root</code> 用户;  更多关于他和系统安装之间的冲突，查看<a href="https://docs.docker.com/engine/security/security/#docker-daemon-attack-surface" target="_blank" rel="noopener"><em>Docker Daemon Attack Surface</em></a>。</p>
+</blockquote>
+<p>创建 <code>docker</code> 用户组和添加用户：</p>
+<ol>
+<li><p>使用具有 <code>sudo</code> 权限的用户登录系统。</p>
+</li>
+<li><p>创建 <code>docker</code> 用户组。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo groupadd docker</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加你的用户到 <code>docker</code> 用户组。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo usermod -aG docker <span class="variable">$USER</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重新登录用户。</p>
+<p> 确保你的用户拥有正确的权限。</p>
+</li>
+<li><p>使用没有 <code>sudo</code> 的命令运行 <code>docker</code> 来验证你的工作。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ docker run hello-world</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h2 id="Start-the-docker-daemon-at-boot"><a href="#Start-the-docker-daemon-at-boot" class="headerlink" title="Start the docker daemon at boot"></a>Start the docker daemon at boot<a href="https://docs.docker.com/engine/installation/linux/rhel/#start-the-docker-daemon-at-boot" target="_blank" rel="noopener"></a></h2><p>配置Docker守护进程开机自启动：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo systemctl <span class="built_in">enable</span> docker</span><br></pre></td></tr></table></figure>
+
+<h2 id="Uninstall"><a href="#Uninstall" class="headerlink" title="Uninstall"></a>Uninstall<a href="https://docs.docker.com/engine/installation/linux/rhel/#uninstall" target="_blank" rel="noopener"></a></h2><p>你可以使用 <code>yum</code> 卸载Docker 软件。</p>
+<ol>
+<li><p>列出已安装的Docker包。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ yum list installed | grep docker</span><br><span class="line">docker-engine.x86_64     1.7.1-0.1.el7@/docker-engine-1.7.1-0.1.el7.x86_64</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>移除安装包。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo yum -y remove docker-engine.x86_64</span><br></pre></td></tr></table></figure>
+
+<p> 上面的命令不会移除镜像，容器，卷和用户创建的配置文件在你的主机上。</p>
+</li>
+<li><p>要删除镜像，容器，卷命令如下：</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ rm -rf /var/lib/docker</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>准确和查找所有用户创建的配置文件。</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wepay.jpeg" alt="ovack WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>ovack
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://ovack.com/2016/10/12/Installation-on-redhat-enterprise-linux/" title="在redhat上安装Docker">https://ovack.com/2016/10/12/Installation-on-redhat-enterprise-linux/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+        
+
+  <div class="followme">
+    <p>Welcome to my other publishing channels</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="https://twitter.com/OvackChen">
+            <span class="icon">
+              <i class="fab fa-twitter"></i>
+            </span>
+
+            <span class="label">Twitter</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/10/12/install-docker-on-ubuntu/" rel="prev" title="在Ubuntu上安装Docker">
+      <i class="fa fa-chevron-left"></i> 在Ubuntu上安装Docker
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/10/13/Installation-on-CentOs/" rel="next" title="在centos上安装Docker">
+      在centos上安装Docker <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Red-Hat-Enterprise-Linux"><span class="nav-number">1.</span> <span class="nav-text">Red Hat Enterprise Linux</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Prerequisites"><span class="nav-number">1.1.</span> <span class="nav-text">Prerequisites</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Install-Docker-Engine"><span class="nav-number">1.2.</span> <span class="nav-text">Install Docker Engine</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-with-yum"><span class="nav-number">1.2.1.</span> <span class="nav-text">Install with yum</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Install-with-the-script"><span class="nav-number">1.2.2.</span> <span class="nav-text">Install with the script</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Create-a-docker-group"><span class="nav-number">1.3.</span> <span class="nav-text">Create a docker group</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Start-the-docker-daemon-at-boot"><span class="nav-number">1.4.</span> <span class="nav-text">Start the docker daemon at boot</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Uninstall"><span class="nav-number">1.5.</span> <span class="nav-text">Uninstall</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ovack"
+      src="/images/base/avatar.jpg">
+  <p class="site-author-name" itemprop="name">ovack</p>
+  <div class="site-description" itemprop="description">只是个记事本～～～🗒</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ovack" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ovack" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:youfengtec@gmail.com" title="E-Mail → mailto:youfengtec@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/OvackChen" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;OvackChen" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ovack</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

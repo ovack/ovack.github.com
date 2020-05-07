@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/base/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/base/favicon.jpg">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ovack.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Gentoo安装Docker到Gentoo Linux可以通过两种方式完成：official途径和docker-overlay途径。 官方项目页面Gentoo Docker。 Official way我们推荐第一种方式直接使用官方的app-emulation&#x2F;docker包，如果你在寻找稳定的体验。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在gentoo上安装Docker">
+<meta property="og:url" content="https://ovack.com/2016/10/24/Installation-on-gentoo/index.html">
+<meta property="og:site_name" content="ovack">
+<meta property="og:description" content="Gentoo安装Docker到Gentoo Linux可以通过两种方式完成：official途径和docker-overlay途径。 官方项目页面Gentoo Docker。 Official way我们推荐第一种方式直接使用官方的app-emulation&#x2F;docker包，如果你在寻找稳定的体验。">
+<meta property="article:published_time" content="2016-10-24T12:09:49.000Z">
+<meta property="article:modified_time" content="2016-10-24T12:14:49.000Z">
+<meta property="article:author" content="ovack">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://ovack.com/2016/10/24/Installation-on-gentoo/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>在gentoo上安装Docker | ovack</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-49858833-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-49858833-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">ovack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">笔记本</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">3</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">14</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://ovack.com/2016/10/24/Installation-on-gentoo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/base/avatar.jpg">
+      <meta itemprop="name" content="ovack">
+      <meta itemprop="description" content="只是个记事本～～～🗒">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ovack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在gentoo上安装Docker
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2016-10-24 20:09:49 / Modified: 20:14:49" itemprop="dateCreated datePublished" datetime="2016-10-24T20:09:49+08:00">2016-10-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Gentoo"><a href="#Gentoo" class="headerlink" title="Gentoo"></a>Gentoo<a href="https://docs.docker.com/engine/installation/linux/gentoolinux/#gentoo" target="_blank" rel="noopener"></a></h1><p>安装Docker到Gentoo Linux可以通过两种方式完成：<strong>official</strong>途径和<code>docker-overlay</code>途径。</p>
+<p>官方项目页面<a href="https://wiki.gentoo.org/wiki/Project:Docker" target="_blank" rel="noopener">Gentoo Docker</a>。</p>
+<h2 id="Official-way"><a href="#Official-way" class="headerlink" title="Official way"></a>Official way<a href="https://docs.docker.com/engine/installation/linux/gentoolinux/#official-way" target="_blank" rel="noopener"></a></h2><p>我们推荐第一种方式直接使用官方的<code>app-emulation/docker</code>包，如果你在寻找稳定的体验。</p>
+<a id="more"></a>
+
+<p>如果这个ebuild发生任何问题，包括缺少的内核配置或依赖，打开一个bug在Gentoo <a href="https://bugs.gentoo.org/" target="_blank" rel="noopener">Bugzilla</a>分配给<code>docker AT gentoo DOT org</code> 或者加入和咨询在官方频道<a href="http://webchat.freenode.net/?channels=%23gentoo-containers&uio=d4" target="_blank" rel="noopener">IRC</a> 在Freenode网站。</p>
+<h2 id="docker-overlay-way"><a href="#docker-overlay-way" class="headerlink" title="docker-overlay way"></a>docker-overlay way<a href="https://docs.docker.com/engine/installation/linux/gentoolinux/#docker-overlay-way" target="_blank" rel="noopener"></a></h2><p>如果你在寻找一个<code>-bin</code> ebuild，一个即时的ebuild或者一个bleeding edge ebuild，使用，<a href="https://github.com/tianon/docker-overlay" target="_blank" rel="noopener">docker-overlay</a> 可以使用<code>app-portage/layman</code>添加。大部分精确的和最新为正确的安装和使用overlay的文档在<a href="https://github.com/tianon/docker-overlay/blob/master/README.md#using-this-overlay" target="_blank" rel="noopener">overlay</a>。</p>
+<p>如果这个ebuild发生任何问题，包括缺少的内核配置或依赖，打开一个<a href="https://github.com/tianon/docker-overlay/issues" target="_blank" rel="noopener">issue</a>在<code>docker-overlay</code> 仓库或者ping<code>tianon</code>直接在<code>＃docker</code> IRC频道</p>
+<h2 id="Installation"><a href="#Installation" class="headerlink" title="Installation"></a>Installation<a href="https://docs.docker.com/engine/installation/linux/gentoolinux/#installation" target="_blank" rel="noopener"></a></h2><h3 id="Available-USE-flags"><a href="#Available-USE-flags" class="headerlink" title="Available USE flags"></a>Available USE flags<a href="https://docs.docker.com/engine/installation/linux/gentoolinux/#available-use-flags" target="_blank" rel="noopener"></a></h3><table>
+<thead>
+<tr>
+<th align="left">使用标记</th>
+<th align="center">默认</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">aufs</td>
+<td align="center"></td>
+<td align="left">为“aufs”图像驱动开启依赖，包含必需的内核标志。</td>
+</tr>
+<tr>
+<td align="left">btrfs</td>
+<td align="center"></td>
+<td align="left">为“btrfs”图像驱动开启依赖，包含必需的内核标志。</td>
+</tr>
+<tr>
+<td align="left">contrib</td>
+<td align="center">Yes</td>
+<td align="left">安装额外的脚本和组件。</td>
+</tr>
+<tr>
+<td align="left">device-mapper</td>
+<td align="center">Yes</td>
+<td align="left">为“devicemapper”图像驱动开启依赖，包含必需的内核标志。</td>
+</tr>
+<tr>
+<td align="left">doc</td>
+<td align="center"></td>
+<td align="left">添加额外的文档，比如API和Javadoc。我们推荐开启部分包。</td>
+</tr>
+<tr>
+<td align="left">vim-syntax</td>
+<td align="center"></td>
+<td align="left">采用vim语法脚本。</td>
+</tr>
+<tr>
+<td align="left">zsh-completion</td>
+<td align="center"></td>
+<td align="left">启用zsh完全支持。</td>
+</tr>
+</tbody></table>
+<p>使用标记详情<a href="https://tianon.github.io/post/2014/05/17/docker-on-gentoo.html" target="_blank" rel="noopener">tianon’s blog</a>。</p>
+<p>安装包应该正确的拉取必需的依赖和所有的内核选项。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo emerge -av app-emulation/docker</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注意: 有时官方版本<strong>Gentoo tree</strong>和<strong>docker-overlay</strong>之间会有差异。<br>请耐心等待，最新版本将尽快传播。</p>
+</blockquote>
+<h2 id="Starting-Docker"><a href="#Starting-Docker" class="headerlink" title="Starting Docker"></a>Starting Docker<a href="https://docs.docker.com/engine/installation/linux/gentoolinux/#starting-docker" target="_blank" rel="noopener"></a></h2><p>确保你正在运行的内核包含所有需要的模块和配置（和可选的device-mapper和AUFS或者Btrfs，取决于你使用的存储驱动）。</p>
+<p>使用Docker， <code>docker</code>守护进程必须使用<strong>root</strong>运行。<br>要<strong>non-root</strong>的用户使用Docker，通过下列命令把你自己添加到<strong>docker</strong>组：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo groupadd docker</span><br><span class="line">$ sudo usermod -a -G docker user</span><br></pre></td></tr></table></figure>
+
+<h3 id="OpenRC"><a href="#OpenRC" class="headerlink" title="OpenRC"></a>OpenRC<a href="https://docs.docker.com/engine/installation/linux/gentoolinux/#openrc" target="_blank" rel="noopener"></a></h3><p>启动<code>docker</code>守护进程：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo /etc/init.d/docker start</span><br></pre></td></tr></table></figure>
+
+<p>在系统启动时运行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo rc-update add docker default</span><br></pre></td></tr></table></figure>
+
+<h3 id="systemd"><a href="#systemd" class="headerlink" title="systemd"></a>systemd<a href="https://docs.docker.com/engine/installation/linux/gentoolinux/#systemd" target="_blank" rel="noopener"></a></h3><p>开启<code>docker</code>守护进程：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo systemctl start docker</span><br></pre></td></tr></table></figure>
+
+<p>在系统启动时运行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo systemctl <span class="built_in">enable</span> docker</span><br></pre></td></tr></table></figure>
+
+<p>如果你想添加HTTP代理，设置另一个存放Docker运行时文件目录或者磁盘，或者其他个性化设置，阅读我们Systemd文章<a href="https://docs.docker.com/engine/admin/systemd/" target="_blank" rel="noopener">customize your Systemd Docker daemon options</a>。</p>
+<h2 id="Uninstallation"><a href="#Uninstallation" class="headerlink" title="Uninstallation"></a>Uninstallation<a href="https://docs.docker.com/engine/installation/linux/gentoolinux/#uninstallation" target="_blank" rel="noopener"></a></h2><p>卸载Docker安装包：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo emerge -cav app-emulation/docker</span><br></pre></td></tr></table></figure>
+
+<p>卸载不需要的Docker安装包和依赖：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo emerge -C app-emulation/docker</span><br></pre></td></tr></table></figure>
+
+<p>上述命令不会删除主机上的镜像，容器，卷或用户创建的配置文件。 如果要删除所有镜像，容器和卷，请运行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ rm -rf /var/lib/docker</span><br></pre></td></tr></table></figure>
+
+<p>你必需手动的删除用户配置文件。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wepay.jpeg" alt="ovack WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>ovack
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://ovack.com/2016/10/24/Installation-on-gentoo/" title="在gentoo上安装Docker">https://ovack.com/2016/10/24/Installation-on-gentoo/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+        
+
+  <div class="followme">
+    <p>Welcome to my other publishing channels</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="https://twitter.com/OvackChen">
+            <span class="icon">
+              <i class="fab fa-twitter"></i>
+            </span>
+
+            <span class="label">Twitter</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/10/23/Installation-on-cruxlinux/" rel="prev" title="在cruxlinux上安装Docker">
+      <i class="fa fa-chevron-left"></i> 在cruxlinux上安装Docker
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/10/25/Installation-on-oraclelinux/" rel="next" title="在oraclelinux上安装Docker">
+      在oraclelinux上安装Docker <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Gentoo"><span class="nav-number">1.</span> <span class="nav-text">Gentoo</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Official-way"><span class="nav-number">1.1.</span> <span class="nav-text">Official way</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#docker-overlay-way"><span class="nav-number">1.2.</span> <span class="nav-text">docker-overlay way</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Installation"><span class="nav-number">1.3.</span> <span class="nav-text">Installation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Available-USE-flags"><span class="nav-number">1.3.1.</span> <span class="nav-text">Available USE flags</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Starting-Docker"><span class="nav-number">1.4.</span> <span class="nav-text">Starting Docker</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenRC"><span class="nav-number">1.4.1.</span> <span class="nav-text">OpenRC</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#systemd"><span class="nav-number">1.4.2.</span> <span class="nav-text">systemd</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Uninstallation"><span class="nav-number">1.5.</span> <span class="nav-text">Uninstallation</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ovack"
+      src="/images/base/avatar.jpg">
+  <p class="site-author-name" itemprop="name">ovack</p>
+  <div class="site-description" itemprop="description">只是个记事本～～～🗒</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ovack" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ovack" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:youfengtec@gmail.com" title="E-Mail → mailto:youfengtec@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/OvackChen" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;OvackChen" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ovack</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

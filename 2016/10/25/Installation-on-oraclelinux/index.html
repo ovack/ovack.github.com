@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/base/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/base/favicon.jpg">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ovack.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Oracle LinuxDocker支持在Oracle Linux 6和7。把Docker安装在Oracle Linux你不需要Oracle Linux支持订阅。 Prerequisites由于当前Docker限制，Docker只能运行在x86_64架构上。Docker需要在Oracle Linux上使用Unbreakable Enterprise Kernel Release 4 (4.1.12">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在oraclelinux上安装Docker">
+<meta property="og:url" content="https://ovack.com/2016/10/25/Installation-on-oraclelinux/index.html">
+<meta property="og:site_name" content="ovack">
+<meta property="og:description" content="Oracle LinuxDocker支持在Oracle Linux 6和7。把Docker安装在Oracle Linux你不需要Oracle Linux支持订阅。 Prerequisites由于当前Docker限制，Docker只能运行在x86_64架构上。Docker需要在Oracle Linux上使用Unbreakable Enterprise Kernel Release 4 (4.1.12">
+<meta property="article:published_time" content="2016-10-25T14:18:28.000Z">
+<meta property="article:modified_time" content="2016-10-27T14:04:36.000Z">
+<meta property="article:author" content="ovack">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://ovack.com/2016/10/25/Installation-on-oraclelinux/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>在oraclelinux上安装Docker | ovack</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-49858833-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-49858833-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">ovack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">笔记本</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">3</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">14</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://ovack.com/2016/10/25/Installation-on-oraclelinux/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/base/avatar.jpg">
+      <meta itemprop="name" content="ovack">
+      <meta itemprop="description" content="只是个记事本～～～🗒">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ovack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在oraclelinux上安装Docker
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-10-25 22:18:28" itemprop="dateCreated datePublished" datetime="2016-10-25T22:18:28+08:00">2016-10-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2016-10-27 22:04:36" itemprop="dateModified" datetime="2016-10-27T22:04:36+08:00">2016-10-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Oracle-Linux"><a href="#Oracle-Linux" class="headerlink" title="Oracle Linux"></a>Oracle Linux<a href="https://docs.docker.com/engine/installation/linux/oracle/#oracle-linux" target="_blank" rel="noopener"></a></h1><p>Docker支持在Oracle Linux 6和7。把Docker安装在Oracle Linux你不需要Oracle Linux支持订阅。</p>
+<h2 id="Prerequisites"><a href="#Prerequisites" class="headerlink" title="Prerequisites"></a>Prerequisites<a href="https://docs.docker.com/engine/installation/linux/oracle/#prerequisites" target="_blank" rel="noopener"></a></h2><p>由于当前Docker限制，Docker只能运行在x86_64架构上。Docker需要在Oracle Linux上使用Unbreakable Enterprise Kernel Release 4 (4.1.12)或更高版本。这个内核支持在Oracle Linux 6 和 7的Docker btrfs存储引擎。</p>
+<a id="more"></a>
+
+<h2 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install<a href="https://docs.docker.com/engine/installation/linux/oracle/#install" target="_blank" rel="noopener"></a></h2><blockquote>
+<p><strong>注意</strong>: 下面的程序的安装二进制包由Docker构建。Oracle Linux 支持不包括这些二进制包。要确保Oracle Linux 支持，请按照 <a href="https://docs.oracle.com/en/operating-systems/?tab=2" target="_blank" rel="noopener">Oracle Linux documentation</a>提供的安装指南。<br>为Oracle Linux 6 和 7的安装指南可以在<a href="https://docs.oracle.com/cd/E52668_01/E75728/html/docker_install_upgrade.html" target="_blank" rel="noopener">Chapter 2 of the Docker User’s Guide</a>查看。</p>
+</blockquote>
+<ol>
+<li><p>使用具有 <code>sudo</code> 或 <code>root</code> 权限的用户登录你的系统。</p>
+</li>
+<li><p>确保你现在的yum软件包是最新的。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo yum update</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加yum源。</p>
+<p>为版本6：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo tee /etc/yum.repos.d/docker.repo &lt;&lt;-EOF</span><br><span class="line">[dockerrepo]</span><br><span class="line">name=Docker Repository</span><br><span class="line">baseurl=https://yum.dockerproject.org/repo/main/oraclelinux/6</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=https://yum.dockerproject.org/gpg</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+
+<p>为版本7：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ cat &gt;/etc/yum.repos.d/docker.repo &lt;&lt;-EOF</span><br><span class="line">[dockerrepo]</span><br><span class="line">name=Docker Repository</span><br><span class="line">baseurl=https://yum.dockerproject.org/repo/main/oraclelinux/7</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">gpgkey=https://yum.dockerproject.org/gpg</span><br><span class="line">EOF</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装Docker安装包。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo yum install docker-engine</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>开启Docker守护进程。</p>
+<p>在Oracle Linux 6：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo service docker start</span><br></pre></td></tr></table></figure>
+
+<p>在Oracle Linux 7：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo systemctl start docker.service</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在容器中运行一个镜像来验证 <code>docker</code> 是否安装正确。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo docker run hello-world</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h2 id="Optional-configurations"><a href="#Optional-configurations" class="headerlink" title="Optional configurations"></a>Optional configurations<a href="https://docs.docker.com/engine/installation/linux/oracle/#optional-configurations" target="_blank" rel="noopener"></a></h2><p>这部分包含可选的程序使你的Oracle Linux能够更好地和Docker一起工作。</p>
+<ul>
+<li><a href="https://docs.docker.com/engine/installation/linux/oracle/#create-a-docker-group" target="_blank" rel="noopener">Create a docker group</a></li>
+<li><a href="https://docs.docker.com/engine/installation/linux/oracle/#configure-docker-to-start-on-boot" target="_blank" rel="noopener">Configure Docker to start on boot</a></li>
+<li><a href="https://docs.docker.com/engine/installation/linux/oracle/#use-the-btrfs-storage-engine" target="_blank" rel="noopener">Use the btrfs storage engine</a></li>
+</ul>
+<h3 id="Create-a-Docker-group"><a href="#Create-a-Docker-group" class="headerlink" title="Create a Docker group"></a>Create a Docker group<a href="https://docs.docker.com/engine/installation/linux/oracle/#create-a-docker-group" target="_blank" rel="noopener"></a></h3><p><code>docker</code> 守护进程绑定在一个Unix socket 来代替TCP端口。 默认情况下 Unix socket 属于 <code>root</code> 用户和其它具有 <code>sudo</code> 权限的用户。因此，<code>docker</code> 守护进程总是使用<code>root</code> 用户运行。</p>
+<p>为避免每次使用 <code>docker</code> 命令都要添加<code>sudo</code>，创建一个叫做 <code>docker</code> 的Unix 用户组并使用它。当<code>docker</code> 守护进程启动，<code>docker</code> 用户组会分配Unix socket的读写权限。</p>
+<blockquote>
+<p><strong>警告</strong>: <code>docker</code> 用户组等同于 <code>root</code> 用户;  更多关于他和系统安装之间的冲突，查看<a href="https://docs.docker.com/engine/security/security/#docker-daemon-attack-surface" target="_blank" rel="noopener"><em>Docker Daemon Attack Surface</em></a>。</p>
+</blockquote>
+<p>创建 <code>docker</code> 用户组和添加用户：</p>
+<ol>
+<li><p>使用具有 <code>sudo</code> 权限的用户登录系统。</p>
+</li>
+<li><p>创建 <code>docker</code> 用户组。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo groupadd docker</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加你的用户到 <code>docker</code> 用户组。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo usermod -aG docker <span class="variable">$USER</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重新登录用户。</p>
+<p> 确保你的用户拥有正确的权限。</p>
+</li>
+<li><p>使用没有 <code>sudo</code> 的命令运行 <code>docker</code> 来验证你的工作。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ docker run hello-world</span><br></pre></td></tr></table></figure>
+
+<p>如果失败会出现以下类似信息：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Cannot connect to the Docker daemon. Is <span class="string">'docker daemon'</span> running on this host?</span><br></pre></td></tr></table></figure>
+
+<p>检查 <code>DOCKER_HOST</code> 环境变量是否设置。如果设置了，重新设置它。</p>
+</li>
+</ol>
+<h3 id="Configure-Docker-to-start-on-boot"><a href="#Configure-Docker-to-start-on-boot" class="headerlink" title="Configure Docker to start on boot"></a>Configure Docker to start on boot<a href="https://docs.docker.com/engine/installation/linux/oracle/#configure-docker-to-start-on-boot" target="_blank" rel="noopener"></a></h3><p>你可以配置Docker守护进程在开机时自启动。</p>
+<p>在Oracle Linux 6：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo chkconfig docker on</span><br></pre></td></tr></table></figure>
+
+<p>在Oracle Linux 7：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo systemctl <span class="built_in">enable</span> docker.service</span><br></pre></td></tr></table></figure>
+
+<p>如果你想添加HTTP代理，设置另一个存放Docker运行时文件目录或者磁盘，或者其他个性化设置，阅读我们Systemd文章<a href="https://docs.docker.com/engine/admin/systemd/" target="_blank" rel="noopener">customize your Systemd Docker daemon options</a>。</p>
+<h3 id="Use-the-btrfs-storage-engine"><a href="#Use-the-btrfs-storage-engine" class="headerlink" title="Use the btrfs storage engine"></a>Use the btrfs storage engine<a href="https://docs.docker.com/engine/installation/linux/oracle/#use-the-btrfs-storage-engine" target="_blank" rel="noopener"></a></h3><p>Docker支持在Oracle Linux 6 和 7上使用btrfs存储引擎。在开启btrfs支持之前，确保<code>/var/lib/docker</code>存储在一个btrfs-based文件系统上。查阅<a href="http://docs.oracle.com/cd/E37670_01/E37355/html/ol_btrfs.html" target="_blank" rel="noopener">Chapter 5</a> 关于 <a href="http://docs.oracle.com/cd/E37670_01/E37355/html/index.html" target="_blank" rel="noopener">Oracle Linux Administrator’s Solution Guide</a> 获取更多如何创建和挂载btrfs文件系统的细节。</p>
+<p>在Oracle Linux上开启btrfs 支持：</p>
+<ol>
+<li><p>确保 <code>/var/lib/docker</code> 在一个btrfs文件系统上。</p>
+</li>
+<li><p>编辑 <code>/etc/sysconfig/docker</code> 和为字段<code>OTHER_ARGS</code> 添加值<code>-s btrfs</code>。</p>
+</li>
+<li><p>重新启动Docker守护进程：</p>
+</li>
+</ol>
+<h2 id="Uninstallation"><a href="#Uninstallation" class="headerlink" title="Uninstallation"></a>Uninstallation<a href="https://docs.docker.com/engine/installation/linux/oracle/#uninstallation" target="_blank" rel="noopener"></a></h2><p>卸载Docker 安装包：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo yum -y remove docker-engine</span><br></pre></td></tr></table></figure>
+
+<p>上述命令不会删除主机上的图像，容器，卷或用户创建的配置文件。 如果要删除所有图像，容器和卷，请运行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ rm -rf /var/lib/docker</span><br></pre></td></tr></table></figure>
+
+<p>你必需手动的删除用户配置文件。</p>
+<h2 id="Known-issues"><a href="#Known-issues" class="headerlink" title="Known issues"></a>Known issues<a href="https://docs.docker.com/engine/installation/linux/oracle/#known-issues" target="_blank" rel="noopener"></a></h2><h3 id="Docker-unmounts-btrfs-filesystem-on-shutdown"><a href="#Docker-unmounts-btrfs-filesystem-on-shutdown" class="headerlink" title="Docker unmounts btrfs filesystem on shutdown"></a>Docker unmounts btrfs filesystem on shutdown<a href="https://docs.docker.com/engine/installation/linux/oracle/#docker-unmounts-btrfs-filesystem-on-shutdown" target="_blank" rel="noopener"></a></h3><p>如果你在btrfs存储系统上运行Docker引擎并停止Docker服务，他将在关闭过程中卸载btrfs系统。你在每次重启Docker服务时需要确保文件系统是否正确挂载。</p>
+<p>在Oracle Linux 7，你可以使用<code>systemd.mount</code> 定义和修改Docker<code>systemd.service</code>依赖于btrfs挂载在系统级。</p>
+<h3 id="SElinux-support-on-Oracle-Linux-7"><a href="#SElinux-support-on-Oracle-Linux-7" class="headerlink" title="SElinux support on Oracle Linux 7"></a>SElinux support on Oracle Linux 7<a href="https://docs.docker.com/engine/installation/linux/oracle/#selinux-support-on-oracle-linux-7" target="_blank" rel="noopener"></a></h3><p>在文件<code>/etc/sysconfig/selinux</code>中必须将SElinux设置为<code>Permissive</code> 或者 <code>Disabled</code> 在Oracle Linux 7上使用btrfs存储。</p>
+<h2 id="Further-issues"><a href="#Further-issues" class="headerlink" title="Further issues?"></a>Further issues?<a href="https://docs.docker.com/engine/installation/linux/oracle/#further-issues" target="_blank" rel="noopener"></a></h2><p>如果你拥有Oracle Linux基本和高级支持订阅，你可以在 <a href="https://support.oracle.com/" target="_blank" rel="noopener">My Oracle Support</a>报告任何关于安装Docker的工单。</p>
+<p>如果你没有Oracle Linux支持订阅，你可以使用<a href="https://community.oracle.com/community/server_%26_storage_systems/linux/oracle_linux" target="_blank" rel="noopener">Oracle Linux Forum</a> 社区支持。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wepay.jpeg" alt="ovack WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>ovack
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://ovack.com/2016/10/25/Installation-on-oraclelinux/" title="在oraclelinux上安装Docker">https://ovack.com/2016/10/25/Installation-on-oraclelinux/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+        
+
+  <div class="followme">
+    <p>Welcome to my other publishing channels</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="https://twitter.com/OvackChen">
+            <span class="icon">
+              <i class="fab fa-twitter"></i>
+            </span>
+
+            <span class="label">Twitter</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/10/24/Installation-on-gentoo/" rel="prev" title="在gentoo上安装Docker">
+      <i class="fa fa-chevron-left"></i> 在gentoo上安装Docker
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/10/26/Installation-on-SUSE/" rel="next" title="在suse上安装Docker">
+      在suse上安装Docker <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Oracle-Linux"><span class="nav-number">1.</span> <span class="nav-text">Oracle Linux</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Prerequisites"><span class="nav-number">1.1.</span> <span class="nav-text">Prerequisites</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Install"><span class="nav-number">1.2.</span> <span class="nav-text">Install</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Optional-configurations"><span class="nav-number">1.3.</span> <span class="nav-text">Optional configurations</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Create-a-Docker-group"><span class="nav-number">1.3.1.</span> <span class="nav-text">Create a Docker group</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configure-Docker-to-start-on-boot"><span class="nav-number">1.3.2.</span> <span class="nav-text">Configure Docker to start on boot</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Use-the-btrfs-storage-engine"><span class="nav-number">1.3.3.</span> <span class="nav-text">Use the btrfs storage engine</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Uninstallation"><span class="nav-number">1.4.</span> <span class="nav-text">Uninstallation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Known-issues"><span class="nav-number">1.5.</span> <span class="nav-text">Known issues</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Docker-unmounts-btrfs-filesystem-on-shutdown"><span class="nav-number">1.5.1.</span> <span class="nav-text">Docker unmounts btrfs filesystem on shutdown</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SElinux-support-on-Oracle-Linux-7"><span class="nav-number">1.5.2.</span> <span class="nav-text">SElinux support on Oracle Linux 7</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Further-issues"><span class="nav-number">1.6.</span> <span class="nav-text">Further issues?</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ovack"
+      src="/images/base/avatar.jpg">
+  <p class="site-author-name" itemprop="name">ovack</p>
+  <div class="site-description" itemprop="description">只是个记事本～～～🗒</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ovack" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ovack" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:youfengtec@gmail.com" title="E-Mail → mailto:youfengtec@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/OvackChen" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;OvackChen" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ovack</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

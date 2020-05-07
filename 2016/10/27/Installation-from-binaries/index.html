@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/base/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/base/favicon.jpg">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ovack.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Installation from binaries创建这篇指南的目的是为那些希望在多样化环境中运行Docker的hackers。 在开始下面行动之前，你应该彻底检查一下已经打包的Docker 版本在你的发行版linux上是否可用。我们为多个发行版打包，并继续为更多的发行版打包。 Check runtime dependencies要正确的运行，Docker需要在运行环境安装下面的软件：  ipt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用二进制源码安装">
+<meta property="og:url" content="https://ovack.com/2016/10/27/Installation-from-binaries/index.html">
+<meta property="og:site_name" content="ovack">
+<meta property="og:description" content="Installation from binaries创建这篇指南的目的是为那些希望在多样化环境中运行Docker的hackers。 在开始下面行动之前，你应该彻底检查一下已经打包的Docker 版本在你的发行版linux上是否可用。我们为多个发行版打包，并继续为更多的发行版打包。 Check runtime dependencies要正确的运行，Docker需要在运行环境安装下面的软件：  ipt">
+<meta property="article:published_time" content="2016-10-27T14:01:57.000Z">
+<meta property="article:modified_time" content="2016-10-27T14:04:09.000Z">
+<meta property="article:author" content="ovack">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://ovack.com/2016/10/27/Installation-from-binaries/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>使用二进制源码安装 | ovack</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-49858833-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-49858833-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">ovack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">笔记本</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">3</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">14</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://ovack.com/2016/10/27/Installation-from-binaries/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/base/avatar.jpg">
+      <meta itemprop="name" content="ovack">
+      <meta itemprop="description" content="只是个记事本～～～🗒">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ovack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          使用二进制源码安装
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2016-10-27 22:01:57 / Modified: 22:04:09" itemprop="dateCreated datePublished" datetime="2016-10-27T22:01:57+08:00">2016-10-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Installation-from-binaries"><a href="#Installation-from-binaries" class="headerlink" title="Installation from binaries"></a>Installation from binaries<a href="https://docs.docker.com/engine/installation/binaries/#installation-from-binaries" target="_blank" rel="noopener"></a></h1><p><strong>创建这篇指南的目的是为那些希望在多样化环境中运行Docker的hackers。</strong></p>
+<p>在开始下面行动之前，你应该彻底检查一下已经打包的Docker 版本在你的发行版linux上是否可用。我们为多个发行版打包，并继续为更多的发行版打包。</p>
+<h2 id="Check-runtime-dependencies"><a href="#Check-runtime-dependencies" class="headerlink" title="Check runtime dependencies"></a>Check runtime dependencies<a href="https://docs.docker.com/engine/installation/binaries/#check-runtime-dependencies" target="_blank" rel="noopener"></a></h2><p>要正确的运行，Docker需要在运行环境安装下面的软件：</p>
+<ul>
+<li>iptables version 1.4 or later</li>
+<li>Git version 1.7 or later</li>
+<li>procps (or similar provider of a “ps” executable)</li>
+<li>XZ Utils 4.9 or later</li>
+<li>a <a href="https://github.com/tianon/cgroupfs-mount/blob/master/cgroupfs-mount" target="_blank" rel="noopener">properly mounted</a> cgroupfs hierarchy (having a single, all-encompassing “cgroup” mount point <a href="https://github.com/docker/docker/issues/2683" target="_blank" rel="noopener">is</a> <a href="https://github.com/docker/docker/issues/3485" target="_blank" rel="noopener">not</a> <a href="https://github.com/docker/docker/issues/4568" target="_blank" rel="noopener">sufficient</a>)</li>
+</ul>
+<a id="more"></a>
+<h2 id="Check-kernel-dependencies"><a href="#Check-kernel-dependencies" class="headerlink" title="Check kernel dependencies"></a>Check kernel dependencies<a href="https://docs.docker.com/engine/installation/binaries/#check-kernel-dependencies" target="_blank" rel="noopener"></a></h2><p>Docker在后台模式有特殊的内核需求。更多，在<a href="https://docs.docker.com/engine/installation/#on-linux" target="_blank" rel="noopener"><em>Installation</em></a>检查你的发行版。</p>
+<p>3.10以前的内核缺少Docker容器运行的一些功能。这些老的版本已知有很多致使数据丢失的bug，并且在一定的条件下频繁的崩溃。</p>
+<p>建议使用3.10（或更新的维护版本）Linux内核的主要维护版本（3.x.y）。 使内核保持最新的版本将确保关键的内核错误得到修复。</p>
+<blockquote>
+<p><strong>警告</strong>: 安装定制的内核和呢荷包可能不被你的发行版供应商支持。在安装内核包前请联系你的供应商确保其支持Docker。<br><strong>警告</strong>: 在一些发行版本上安装最新的内核可能还不够，可能其提供的包太旧和最新的内核冲突。</p>
+</blockquote>
+<p>注意Docker有client模式，他可以运行在任何虚拟的Linux呢和上（它甚至可以运行在macOS！）。</p>
+<h2 id="Enable-AppArmor-and-SELinux-when-possible"><a href="#Enable-AppArmor-and-SELinux-when-possible" class="headerlink" title="Enable AppArmor and SELinux when possible"></a>Enable AppArmor and SELinux when possible<a href="https://docs.docker.com/engine/installation/binaries/#enable-apparmor-and-selinux-when-possible" target="_blank" rel="noopener"></a></h2><p>请使用AppArmor或者SELinux如果你的linux发行版支持两者任意一个。这可以提高系统的安全性并阻止一些漏洞。你的发行版的文档应该提供如何开启建议的安全程序的步骤。</p>
+<p>一些linux发行版开启AppArmor或者SELinux但是没有运行在必需的内核版本（3.10 或 newer）。更新这些内核到3.10或更新的版本不足以运行Docker和容器。系统提供的AppArmor / SELinux用户空间实用程序版本与内核之间的不兼容性可能会阻止Docker运行，启动容器或导致容器出现意外行为。</p>
+<blockquote>
+<p><strong>Warning</strong>: If either of the security mechanisms is enabled, it should not be disabled to make Docker or its containers run. This will reduce security in that environment, lose support from the distribution’s vendor for the system, and might break regulations and security policies in heavily regulated environments.</p>
+</blockquote>
+<h2 id="Get-the-Docker-Engine-binaries"><a href="#Get-the-Docker-Engine-binaries" class="headerlink" title="Get the Docker Engine binaries"></a>Get the Docker Engine binaries<a href="https://docs.docker.com/engine/installation/binaries/#get-the-docker-engine-binaries" target="_blank" rel="noopener"></a></h2><p>你可以下载最新版本或特别版本的二进制包。要获得一系列稳定版本的列表，查看 <code>docker/docker</code> <a href="https://github.com/docker/docker/releases" target="_blank" rel="noopener">releases page</a>。您可以通过将.md5和.sha 256分别附加到URL来获取MD5和SHA256。</p>
+<h3 id="Get-the-Linux-binaries"><a href="#Get-the-Linux-binaries" class="headerlink" title="Get the Linux binaries"></a>Get the Linux binaries<a href="https://docs.docker.com/engine/installation/binaries/#get-the-linux-binaries" target="_blank" rel="noopener"></a></h3><p>使用下面的链接下载最新版本：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">https://get.docker.com/builds/Linux/i386/docker-latest.tgz</span><br><span class="line">https://get.docker.com/builds/Linux/x86_64/docker-latest.tgz</span><br></pre></td></tr></table></figure>
+
+<p>要下载指定版本使用下面的url规则：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">https://get.docker.com/builds/Linux/i386/docker-&lt;version&gt;.tgz</span><br><span class="line">https://get.docker.com/builds/Linux/x86_64/docker-&lt;version&gt;.tgz</span><br></pre></td></tr></table></figure>
+
+<p>比如：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">https://get.docker.com/builds/Linux/i386/docker-1.11.0.tgz</span><br><span class="line">https://get.docker.com/builds/Linux/x86_64/docker-1.11.0.tgz</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>注意</strong> 这些说明适用于Docker Engine 1.11及以上版本。 Engine 1.10和以下版本由一个二进制文件组成，这些版本的指令是不同的。 要安装1.10或更低版本，请按照中的说明进行操作<a href="https://docs.docker.com/v1.10/engine/installation/binaries/" target="_blank" rel="noopener">1.10 documentation</a>。</p>
+</blockquote>
+<h4 id="Install-the-Linux-binaries"><a href="#Install-the-Linux-binaries" class="headerlink" title="Install the Linux binaries"></a>Install the Linux binaries</h4><p>下载之后，把压缩包解压到你当前位置 <code>docker</code> 目录。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ tar -xvzf docker-latest.tgz</span><br><span class="line"></span><br><span class="line">docker/</span><br><span class="line">docker/docker</span><br><span class="line">docker/docker-containerd</span><br><span class="line">docker/docker-containerd-ctr</span><br><span class="line">docker/docker-containerd-shim</span><br><span class="line">docker/docker-proxy</span><br><span class="line">docker/docker-runc</span><br><span class="line">docker/dockerd</span><br></pre></td></tr></table></figure>
+
+<p>Engine需要安装这些二进制包到你主机的 <code>$PATH</code>。例如安装这些二进制包到<code>/usr/bin</code> ：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ mv docker/* /usr/bin/</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>注意</strong>: 如果你已经安装过Engine在你的主机上，在你安装之前确保已经停止Engine（<code>killall docker</code>）和安装二进制包到同样的位置。你可以通过<code>dirname $(which docker)</code>命令查看当前Docker安装的位置。</p>
+</blockquote>
+<h4 id="Run-the-Engine-daemon-on-Linux"><a href="#Run-the-Engine-daemon-on-Linux" class="headerlink" title="Run the Engine daemon on Linux"></a>Run the Engine daemon on Linux</h4><p>你可以手动的开启Engine到后台模式使用：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo dockerd &amp;</span><br></pre></td></tr></table></figure>
+
+<p>GitHub仓库包含一些示例脚本，你可以通过进程管理器（upstart或者systemd）来控制守护进程。你可以在<a href="https://github.com/docker/docker/tree/master/contrib/init" target="_blank" rel="noopener">contrib directory</a>找到这些脚本。</p>
+<p>更多关于在守护进程模式下运行Engine，查阅 <a href="https://docs.docker.com/engine/reference/commandline/dockerd/" target="_blank" rel="noopener">daemon command</a> Engine命令行参考。</p>
+<h3 id="Get-the-macOS-binary"><a href="#Get-the-macOS-binary" class="headerlink" title="Get the macOS binary"></a>Get the macOS binary<a href="https://docs.docker.com/engine/installation/binaries/#get-the-macos-binary" target="_blank" rel="noopener"></a></h3><p>macOS版二进制包晶晶是一个客户端。你不可以用它运行<code>docker</code>守护进程。为macOS下载最新版本的，使用下面链接：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">https://get.docker.com/builds/Darwin/x86_64/docker-latest.tgz</span><br></pre></td></tr></table></figure>
+
+<p>要为macOS下载指定版本，使用下面的路径：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">https://get.docker.com/builds/Darwin/x86_64/docker-&lt;version&gt;.tgz</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">https://get.docker.com/builds/Darwin/x86_64/docker-1.11.0.tgz</span><br></pre></td></tr></table></figure>
+
+<p>你可以通过双击下载的<code>.tgz</code>压缩文件或者在命令行使用<code>tar -xvzf docker-1.11.0.tgz</code>命令。客户端二进制包可以在任何位置执行。</p>
+<h3 id="Get-the-Windows-binary"><a href="#Get-the-Windows-binary" class="headerlink" title="Get the Windows binary"></a>Get the Windows binary<a href="https://docs.docker.com/engine/installation/binaries/#get-the-windows-binary" target="_blank" rel="noopener"></a></h3><p>你只可以下载<code>1.9.1</code>以上的Windows二进制包。此外32-bit (<code>i386</code>)我二进制包紧紧是一个客户端，你不可以运行<code>docker</code>守护进程。64-bit 二进制包 (<code>x86_64</code>)既是客户端和守护进程。</p>
+<p>使用下面的链接下载最新版Windows二进制包：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">https://get.docker.com/builds/Windows/i386/docker-latest.zip</span><br><span class="line">https://get.docker.com/builds/Windows/x86_64/docker-latest.zip</span><br></pre></td></tr></table></figure>
+
+<p>使用下面的链接下载指定版本的Windows二进制包：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">https://get.docker.com/builds/Windows/i386/docker-&lt;version&gt;.zip</span><br><span class="line">https://get.docker.com/builds/Windows/x86_64/docker-&lt;version&gt;.zip</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">https://get.docker.com/builds/Windows/i386/docker-1.11.0.zip</span><br><span class="line">https://get.docker.com/builds/Windows/x86_64/docker-1.11.0.zip</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>注意</strong> 这些指南是为了Engine 1.11 和更新版本。 未老版本的指南跟这略微不同。要安装 1.10 或以下版本查看下列指南 <a href="https://docs.docker.com/v1.10/engine/installation/binaries/" target="_blank" rel="noopener">1.10 documentation</a>。</p>
+</blockquote>
+<h2 id="Giving-non-root-access"><a href="#Giving-non-root-access" class="headerlink" title="Giving non-root access"></a>Giving non-root access<a href="https://docs.docker.com/engine/installation/binaries/#giving-non-root-access" target="_blank" rel="noopener"></a></h2><p><code>docker</code> 守护进程总是使用root用户运行，<code>docker</code> 守护进程绑定在一个Unix socket 来代替TCP端口。 默认情况下 Unix socket 属于 <code>root</code> 用户。因此，你可以通过<code>sudo</code>来访问它。</p>
+<p>为避免每次使用 <code>docker</code> 命令都要添加<code>sudo</code>，创建一个叫做 <code>docker</code> 的Unix 用户组并使用它。当<code>docker</code> 守护进程启动，<code>docker</code> 用户组会分配Unix socket的读写权限。</p>
+<p>如果你（或者你的Docker安装者）创建一个叫做<code>docker</code>的用户组并添加了一些用户到这个用户组，然后<code>docker</code> 用户组会分配Unix socket的读写权限当守护进程运行的时候。<code>docker</code> 守护进程必须总是以root用户运行，但是如果你通过<code>docker</code>用户组的用户运行一个<code>docker</code>客户端时你不需要再所有的客户端命令前加<code>sudo</code>。从Docker0.9.0开始你可以使用 <code>-G</code> 标志去指代一个替换组。</p>
+<blockquote>
+<p><strong>警告</strong>:  <code>docker</code> 组 (或通过 <code>-G</code> 指定的组) 等同于 <code>root</code>； 详情查阅 <a href="https://docs.docker.com/engine/security/security/#docker-daemon-attack-surface" target="_blank" rel="noopener"><em>Docker Daemon Attack Surface</em></a> 。</p>
+</blockquote>
+<h2 id="Upgrade-Docker-Engine"><a href="#Upgrade-Docker-Engine" class="headerlink" title="Upgrade Docker Engine"></a>Upgrade Docker Engine<a href="https://docs.docker.com/engine/installation/binaries/#upgrade-docker-engine" target="_blank" rel="noopener"></a></h2><p>要手动的在linux上更新你的Docker Engine，首先要关掉docker守护进程：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ killall docker</span><br></pre></td></tr></table></figure>
+
+<p>然后跟随 <a href="https://docs.docker.com/engine/installation/binaries/#get-the-linux-binaries" target="_blank" rel="noopener">regular installation steps</a>.</p>
+<h2 id="Next-steps"><a href="#Next-steps" class="headerlink" title="Next steps"></a>Next steps<a href="https://docs.docker.com/engine/installation/binaries/#next-steps" target="_blank" rel="noopener"></a></h2><p>继续 <a href="https://docs.docker.com/engine/userguide/" target="_blank" rel="noopener">User Guide</a>.</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wepay.jpeg" alt="ovack WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>ovack
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://ovack.com/2016/10/27/Installation-from-binaries/" title="使用二进制源码安装">https://ovack.com/2016/10/27/Installation-from-binaries/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+        
+
+  <div class="followme">
+    <p>Welcome to my other publishing channels</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="https://twitter.com/OvackChen">
+            <span class="icon">
+              <i class="fab fa-twitter"></i>
+            </span>
+
+            <span class="label">Twitter</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/10/26/Installation-on-SUSE/" rel="prev" title="在suse上安装Docker">
+      <i class="fa fa-chevron-left"></i> 在suse上安装Docker
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Installation-from-binaries"><span class="nav-number">1.</span> <span class="nav-text">Installation from binaries</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Check-runtime-dependencies"><span class="nav-number">1.1.</span> <span class="nav-text">Check runtime dependencies</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Check-kernel-dependencies"><span class="nav-number">1.2.</span> <span class="nav-text">Check kernel dependencies</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Enable-AppArmor-and-SELinux-when-possible"><span class="nav-number">1.3.</span> <span class="nav-text">Enable AppArmor and SELinux when possible</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Get-the-Docker-Engine-binaries"><span class="nav-number">1.4.</span> <span class="nav-text">Get the Docker Engine binaries</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Get-the-Linux-binaries"><span class="nav-number">1.4.1.</span> <span class="nav-text">Get the Linux binaries</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Install-the-Linux-binaries"><span class="nav-number">1.4.1.1.</span> <span class="nav-text">Install the Linux binaries</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Run-the-Engine-daemon-on-Linux"><span class="nav-number">1.4.1.2.</span> <span class="nav-text">Run the Engine daemon on Linux</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Get-the-macOS-binary"><span class="nav-number">1.4.2.</span> <span class="nav-text">Get the macOS binary</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Get-the-Windows-binary"><span class="nav-number">1.4.3.</span> <span class="nav-text">Get the Windows binary</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Giving-non-root-access"><span class="nav-number">1.5.</span> <span class="nav-text">Giving non-root access</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Upgrade-Docker-Engine"><span class="nav-number">1.6.</span> <span class="nav-text">Upgrade Docker Engine</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Next-steps"><span class="nav-number">1.7.</span> <span class="nav-text">Next steps</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ovack"
+      src="/images/base/avatar.jpg">
+  <p class="site-author-name" itemprop="name">ovack</p>
+  <div class="site-description" itemprop="description">只是个记事本～～～🗒</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ovack" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ovack" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:youfengtec@gmail.com" title="E-Mail → mailto:youfengtec@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/OvackChen" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;OvackChen" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ovack</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

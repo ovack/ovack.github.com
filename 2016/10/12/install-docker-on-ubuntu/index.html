@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/base/favicon.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/base/favicon.jpg">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"ovack.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"right","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="UbuntuDocker支持这些Ubuntu操作系统：  Ubuntu Xenial 16.04 (LTS) Ubuntu Trusty 14.04 (LTS) Ubuntu Precise 12.04 (LTS)  这篇文章指导你使用Docker-managed的安装包和安装技巧来安装Docker。使用这些安装包确保你安装最新的Docker。如果你希望使用Ubuntu包管理器安装Docker，查">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在Ubuntu上安装Docker">
+<meta property="og:url" content="https://ovack.com/2016/10/12/install-docker-on-ubuntu/index.html">
+<meta property="og:site_name" content="ovack">
+<meta property="og:description" content="UbuntuDocker支持这些Ubuntu操作系统：  Ubuntu Xenial 16.04 (LTS) Ubuntu Trusty 14.04 (LTS) Ubuntu Precise 12.04 (LTS)  这篇文章指导你使用Docker-managed的安装包和安装技巧来安装Docker。使用这些安装包确保你安装最新的Docker。如果你希望使用Ubuntu包管理器安装Docker，查">
+<meta property="article:published_time" content="2016-10-12T14:32:22.000Z">
+<meta property="article:modified_time" content="2016-10-24T12:13:29.000Z">
+<meta property="article:author" content="ovack">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://ovack.com/2016/10/12/install-docker-on-ubuntu/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-Hans'
+  };
+</script>
+
+  <title>在Ubuntu上安装Docker | ovack</title>
+  
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-49858833-1"></script>
+    <script>
+      if (CONFIG.hostname === location.hostname) {
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-49858833-1');
+      }
+    </script>
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">ovack</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">笔记本</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">0</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">3</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">14</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-Hans">
+    <link itemprop="mainEntityOfPage" href="https://ovack.com/2016/10/12/install-docker-on-ubuntu/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/base/avatar.jpg">
+      <meta itemprop="name" content="ovack">
+      <meta itemprop="description" content="只是个记事本～～～🗒">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="ovack">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在Ubuntu上安装Docker
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2016-10-12 22:32:22" itemprop="dateCreated datePublished" datetime="2016-10-12T22:32:22+08:00">2016-10-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2016-10-24 20:13:29" itemprop="dateModified" datetime="2016-10-24T20:13:29+08:00">2016-10-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Docker/" itemprop="url" rel="index"><span itemprop="name">Docker</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Ubuntu"><a href="#Ubuntu" class="headerlink" title="Ubuntu"></a>Ubuntu</h1><p>Docker支持这些Ubuntu操作系统：</p>
+<ul>
+<li>Ubuntu Xenial 16.04 (LTS)</li>
+<li>Ubuntu Trusty 14.04 (LTS)</li>
+<li>Ubuntu Precise 12.04 (LTS)</li>
+</ul>
+<p>这篇文章指导你使用Docker-managed的安装包和安装技巧来安装Docker。使用这些安装包确保你安装最新的Docker。如果你希望使用Ubuntu包管理器安装Docker，查看你的Ubuntu文档。</p>
+<a id="more"></a>
+
+<blockquote>
+<p><strong>注意</strong>: Ubuntu Utopic 14.10 and 15.04 在 Docker 的 <code>APT</code> 仓库但是很快将不再支持。</p>
+</blockquote>
+<h2 id="Prerequisites"><a href="#Prerequisites" class="headerlink" title="Prerequisites"></a>Prerequisites</h2><p>Docker需要一个不限版本的64位Ubuntu系统。另外你的内核版本必须在3.10以上。最近的3.10版本或者新的主要版本也是支持的。</p>
+<p>3.10以前的内核缺少Docker容器运行的一些功能。这些老的版本已知有很多致使数据丢失的bug，并且在一定的条件下频繁的崩溃。</p>
+<p>要检查你的内核版本，打开终端使用  <code>uname -r</code>  命令打印你的内核版本：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ uname -r</span><br><span class="line">3.11.0-15-generic</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>注意</strong>：如果你之前使用 <code>APT</code> 安装过Docker， 请确保你已经更新过 <code>APT</code> 源。</p>
+</blockquote>
+<h3 id="Update-your-apt-sources"><a href="#Update-your-apt-sources" class="headerlink" title="Update your apt sources"></a>Update your apt sources</h3><p>Docker的 <code>APT</code> 仓库包含 1.7.1 和更高的Docker版本。 设置 <code>APT</code> 使用安装包在新的仓库：</p>
+<ol>
+<li><p>使用具有 <code>sudo</code> or <code>root</code> 权限的用户登录你的系统。</p>
+</li>
+<li><p>打开终端窗口。</p>
+</li>
+<li><p>更新包信息, 确保 APT 工作在 <code>https</code> 模式，并且已经安装CA 证书。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install apt-transport-https ca-certificates</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加新的 <code>GPG</code> 密钥。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt-key adv --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys 58118E89F3A912897C070ADBF76221572C52609D</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>打开文件 <code>/etc/apt/sources.list.d/docker.list</code> 在你喜爱的编辑器。</p>
+<p> 如果没有这个文件就创建它。</p>
+</li>
+<li><p>清除所有内容。</p>
+</li>
+<li><p>添加一些内容为你的Ubuntu 操作系统。</p>
+<p> 可能的内容如下：</p>
+<ul>
+<li><p>On Ubuntu Precise 12.04 (LTS)</p>
+  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">deb https://apt.dockerproject.org/repo ubuntu-precise main</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>On Ubuntu Trusty 14.04 (LTS)</p>
+  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">deb https://apt.dockerproject.org/repo ubuntu-trusty main</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>Ubuntu Xenial 16.04 (LTS)</p>
+  <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">deb https://apt.dockerproject.org/repo ubuntu-xenial main</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>注意</strong>: Docker 并没有提供安装包给所有的架构。 你可以每天在<a href="https://master.dockerproject.org查看最新的二进制包。" target="_blank" rel="noopener">https://master.dockerproject.org查看最新的二进制包。</a> 在多架构系统上安装Docker,，需要添加 <code>[arch=...]</code>节点。 点击 <a href="https://wiki.debian.org/Multiarch/HOWTO#Setting_up_apt_sources" target="_blank" rel="noopener">Debian Multiarch wiki</a> 获取更多细节。</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li><p>保存并关闭  <code>/etc/apt/sources.list.d/docker.list</code> 文件。</p>
+</li>
+<li><p>更新 <code>APT</code> 包索引。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get update</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>清除旧的仓库。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get purge lxc-docker</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>验证 <code>APT</code> 是否从正确的仓库拉取。</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ apt-cache policy docker-engine</span><br></pre></td></tr></table></figure>
+
+<p>从现在开始当你运行 <code>apt-get upgrade</code>，<code>APT</code> 从新的仓库拉取。</p>
+</li>
+</ol>
+<h3 id="Prerequisites-by-Ubuntu-Version"><a href="#Prerequisites-by-Ubuntu-Version" class="headerlink" title="Prerequisites by Ubuntu Version"></a>Prerequisites by Ubuntu Version</h3><ul>
+<li>Ubuntu Xenial 16.04 (LTS)</li>
+<li>Ubuntu Trusty 14.04 (LTS)</li>
+</ul>
+<p>对于Ubuntu Trusty，and Xenial，我们推荐安装 <code>linux-image-extra-*</code> 内核安装包。<code>linux-image-extra-*</code> 安装包允许你使用 <code>aufs</code> 存储驱动。</p>
+<p>安装 <code>linux-image-extra-*</code> 步骤:</p>
+<ol>
+<li><p>在你的Ubuntu主机上打开终端。</p>
+</li>
+<li><p>更新你的包管理器。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get update</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装推荐的包。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get install linux-image-extra-$(uname -r) linux-image-extra-virtual</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装Docker。</p>
+</li>
+</ol>
+<h4 id="Ubuntu-Precise-12-04-LTS"><a href="#Ubuntu-Precise-12-04-LTS" class="headerlink" title="Ubuntu Precise 12.04 (LTS)"></a>Ubuntu Precise 12.04 (LTS)</h4><p>对于 Ubuntu Precise，Docker需要3.13内核版本。 如果你的内核版本低于3.13, 你必须更新内核。更具下面的表格查看你的环境需要安装哪些安装包:</p>
+<table>
+<thead>
+<tr>
+<th align="left">安装包</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong>linux-image-generic-lts-trusty</strong></td>
+<td align="left">Generic Linux kernel image. 这个内核内建了运行Docker需要的AUFS。</td>
+</tr>
+<tr>
+<td align="left"><strong>linux-headers-generic-lts-trusty</strong></td>
+<td align="left">像ZFS 和 VirtualBox guest additions基于这个包。如果你没有为你的内核安装这些headers，你可以跳过这些headers在”trusty” 内核。 如果你不确定是否安装，你最好安装一下。</td>
+</tr>
+<tr>
+<td align="left"><strong>xserver-xorg-lts-trusty</strong></td>
+<td align="left">在没有图形环境的可选. <strong>必需</strong> 当运行Docker在一个图形界面。</td>
+</tr>
+<tr>
+<td align="left"><strong>libgl1-mesa-glx-lts-trusty</strong></td>
+<td align="left">去了解更多安装这个包的原因, 月度backported kernels安装指南, 特别是 <a href="https://wiki.ubuntu.com/Kernel/LTSEnablementStack" target="_blank" rel="noopener">LTS Enablement Stack</a> — 在每个版本的第5条提到。</td>
+</tr>
+</tbody></table>
+<p>更新你的内核和安装额外的包, 操作如下：</p>
+<ol>
+<li><p>在你的Ubuntu主机上打开终端。</p>
+</li>
+<li><p>更新你的包管理器。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get update</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装必需的和额外的安装包。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get install linux-image-generic-lts-trusty</span><br></pre></td></tr></table></figure>
+
+<p> 取决于你的环境，你可能要安装比前面表格上要多的包。</p>
+</li>
+<li><p>重启你的主机。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo reboot</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>当你的机器重启之后，安装Docker。</p>
+</li>
+</ol>
+<h2 id="Install"><a href="#Install" class="headerlink" title="Install"></a>Install</h2><p>确保在你的Ububtu环境安装了前面提到的软件。</p>
+<p>然后，按下列步骤安装：</p>
+<ol>
+<li><p>使用具有 <code>sudo</code> 权限的用户登录你的Ubuntu系统。</p>
+</li>
+<li><p>更新你的 <code>APT</code> 包索引。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get update</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>安装 Docker。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get install docker-engine</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>开启 <code>docker</code> 守护进程。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo service docker start</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>验证 <code>docker</code> 是否安装正确。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo docker run hello-world</span><br></pre></td></tr></table></figure>
+
+<p> 这条命令下载一个测试镜像并且在一个容器中运行它。当这个容器运行时, 他会打印一些信息然后退出。</p>
+</li>
+</ol>
+<h2 id="Optional-configurations"><a href="#Optional-configurations" class="headerlink" title="Optional configurations"></a>Optional configurations</h2><p>这部分包含一些额外的软件使你的Ubuntu更好的为Docker工作。</p>
+<ul>
+<li><a href="https://docs.docker.com/engine/installation/linux/ubuntulinux/#create-a-docker-group" target="_blank" rel="noopener">Create a docker group</a></li>
+<li><a href="https://docs.docker.com/engine/installation/linux/ubuntulinux/#adjust-memory-and-swap-accounting" target="_blank" rel="noopener">Adjust memory and swap accounting</a></li>
+<li><a href="https://docs.docker.com/engine/installation/linux/ubuntulinux/#enable-ufw-forwarding" target="_blank" rel="noopener">Enable UFW forwarding</a></li>
+<li><a href="https://docs.docker.com/engine/installation/linux/ubuntulinux/#configure-a-dns-server-for-use-by-docker" target="_blank" rel="noopener">Configure a DNS server for use by Docker</a></li>
+<li><a href="https://docs.docker.com/engine/installation/linux/ubuntulinux/#configure-docker-to-start-on-boot" target="_blank" rel="noopener">Configure Docker to start on boot</a></li>
+</ul>
+<h3 id="Create-a-Docker-group"><a href="#Create-a-Docker-group" class="headerlink" title="Create a Docker group"></a>Create a Docker group</h3><p> <code>docker</code> 守护进程绑定在一个Unix socket 来代替TCP端口。 默认情况下 Unix socket 属于 <code>root</code> 用户和其它具有 <code>sudo</code> 权限的用户。因此，<code>docker</code> 守护进程总是使用<code>root</code> 用户运行。</p>
+<p>为避免每次使用 <code>docker</code> 命令都要添加<code>sudo</code>，创建一个叫做 <code>docker</code> 的Unix 用户组并使用它。当<code>docker</code> 守护进程启动，<code>docker</code> 用户组会分配Unix socket的读写权限。</p>
+<blockquote>
+<p><strong>警告</strong>：<code>docker</code> 用户组等同于 <code>root</code> 用户;  更多关于他和系统安装之间的冲突，查看<a href="https://docs.docker.com/engine/security/security/#docker-daemon-attack-surface" target="_blank" rel="noopener"><em>Docker Daemon Attack Surface</em></a>。</p>
+</blockquote>
+<p>创建 <code>docker</code> 用户组和添加用户：</p>
+<ol>
+<li><p>使用具有 <code>sudo</code> 权限的用户登录系统。</p>
+</li>
+<li><p>创建 <code>docker</code> 用户组。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo groupadd docker</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加你的用户到 <code>docker</code> 用户组。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo usermod -aG docker <span class="variable">$USER</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重新登录用户。</p>
+<p>确保你的用户拥有正确的权限。</p>
+</li>
+<li><p>使用没有 <code>sudo</code> 的命令运行 <code>docker</code> 来验证你的工作。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ docker run hello-world</span><br></pre></td></tr></table></figure>
+
+<p>如果失败会显示下面的信息：</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">Cannot connect to the Docker daemon. Is <span class="string">'docker daemon'</span> running on this host?</span><br></pre></td></tr></table></figure>
+
+<p> 查看 <code>DOCKER_HOST</code> 环境变量是否设置，如果没有重新设置它。</p>
+</li>
+</ol>
+<h3 id="Adjust-memory-and-swap-accounting"><a href="#Adjust-memory-and-swap-accounting" class="headerlink" title="Adjust memory and swap accounting"></a>Adjust memory and swap accounting</h3><p>当用户运行Docker，它们会看到下面的信息：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">WARNING: Your kernel does not support cgroup swap <span class="built_in">limit</span>. WARNING: Your</span><br><span class="line">kernel does not support swap <span class="built_in">limit</span> capabilities. Limitation discarded.</span><br></pre></td></tr></table></figure>
+
+<p>阻止这些信息，在你的系统上开启 memory and swap accounting。开启 memory and swap accounting 会导致内存占用和效率下降，即时没有运行Docker。 大概会占用总内存的1%。效率大概下降10%。</p>
+<p>开启 memory and swap on system 使用 GNU GRUB (GNU GRand Unified Bootloader)，步骤如下:</p>
+<ol>
+<li><p>使用具有 <code>sudo</code> 权限的用户登录你的系统。</p>
+</li>
+<li><p>编辑 <code>/etc/default/grub</code> 文件。</p>
+</li>
+<li><p>设置 <code>GRUB_CMDLINE_LINUX</code> 的值如下：</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">GRUB_CMDLINE_LINUX=<span class="string">"cgroup_enable=memory swapaccount=1"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>保存并关闭文件。</p>
+</li>
+<li><p>更新 GRUB。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo update-grub</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重启你的系统</p>
+</li>
+</ol>
+<h3 id="Enable-UFW-forwarding"><a href="#Enable-UFW-forwarding" class="headerlink" title="Enable UFW forwarding"></a>Enable UFW forwarding</h3><p>如果你使用 <a href="https://help.ubuntu.com/community/UFW" target="_blank" rel="noopener">UFW (Uncomplicated Firewall)</a> 在你运行Docker的主机上，你需要额外的配置。Docker 使用桥连来管理容器的网络。默认情况下， UFW 关闭所有的转发流量。因此，当Docker运行时开启了UFW， 你必需设置UFW的转发策略。</p>
+<p>另外， UFW的默认设置是阻挡所有的流入流量。如果你希望你的每一个容器都能在Docker端口和远程的主机上通信。如果TLS启用，Docker的端口默认是 <code>2376</code> 否则则是 <code>2375</code> 。 如果TLS禁止, 通信会被拒绝。 默认情况下，Docker 运行在TLS关闭的情况下。</p>
+<p>配置UFW和允许Docker端口流入流量：</p>
+<ol>
+<li><p>使用具有 <code>sudo</code> 权限的用户登录系统。</p>
+</li>
+<li><p>验证UFW是否安装和启用。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo ufw status</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>编辑 <code>/etc/default/ufw</code> 文件</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo nano /etc/default/ufw</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>设置 <code>DEFAULT_FORWARD_POLICY</code> 策略为:</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">DEFAULT_FORWARD_POLICY=<span class="string">"ACCEPT"</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>保存并关闭文件。</p>
+</li>
+<li><p>重新加载UFW。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo ufw reload</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>允许Docker端口的连接。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo ufw allow 2375/tcp</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="Configure-a-DNS-server-for-use-by-Docker"><a href="#Configure-a-DNS-server-for-use-by-Docker" class="headerlink" title="Configure a DNS server for use by Docker"></a>Configure a DNS server for use by Docker</h3><p>在运行Ubuntu或者Ubuntu派生的桌面系统上一般使用 <code>127.0.0.1</code> 作为默认的<code>nameserver</code>在配置文件 <code>/etc/resolv.conf</code> 中。 NetworkManager 也设置 <code>dnsmasq</code> 使用真实的DNS servers和设置<code>nameserver 127.0.0.1</code> 在文件 /<code>etc/resolv.conf</code>中。</p>
+<p>当使用这些配置运行容器在桌面机器中，Docker 用户可见下面的警告：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">WARNING: Local (127.0.0.1) DNS resolver found <span class="keyword">in</span> resolv.conf and containers</span><br><span class="line">can<span class="string">'t use it. Using default external servers : [8.8.8.8 8.8.4.4]</span></span><br></pre></td></tr></table></figure>
+
+<p>导致这个警告的的原因是Docker容器不能使用本地的DNS nameserver。取而代之，Docker使用外在的nameserver。</p>
+<p>为了避免这些警告，你可以为你的Docker容器特别指定DNS server。或者，你可以禁止<code>dnsmasq</code>在NetworkManager。可是，禁止<code>dnsmasq</code>可能会导致DNS解析速度变慢。</p>
+<p>在下面的指南描述了怎么配置Docker守护进程在Ubuntu 14.10或者更低的版本。Ubuntu 15.04或者以上版本使用<code>systemd</code> 作为启动和服务管理。查阅 <a href="https://docs.docker.com/engine/admin/systemd/#custom-docker-daemon-options" target="_blank" rel="noopener">control and configure Docker with systemd</a> 去配置一个<code>systemd</code>管理的守护进程。</p>
+<p>为Docker指定具体的 DNS server：</p>
+<ol>
+<li><p>使用 <code>sudo</code> 权限的用户登录Ubuntu系统。</p>
+</li>
+<li><p>编辑文件 <code>/etc/default/docker</code> 。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo nano /etc/default/docker</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>为Docker添加一项设置。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">DOCKER_OPTS=<span class="string">"--dns 8.8.8.8"</span></span><br></pre></td></tr></table></figure>
+
+<p> 替换 <code>8.8.8.8</code> 为一个本地 DNS server 比如 <code>192.168.1.1</code>。你也可以指定多个DNS servers。 用空格把他们区分开，例如:</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">--dns 8.8.8.8 --dns 192.168.1.1</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><strong>警告</strong>: 如果你在一个网络多变的笔记本上做这些配置, 要确保选择一个公共的 DNS server.</p>
+</blockquote>
+</li>
+<li><p>保存文件。</p>
+</li>
+<li><p>重启Docker 守护进程。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo service docker restart</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p><strong>Or, as an alternative to the previous procedure,</strong> 在NetworkManager里禁止 <code>dnsmasq</code>  （这可能导致你网速变慢）。</p>
+<ol>
+<li><p>编辑文件 <code>/etc/NetworkManager/NetworkManager.conf</code> 。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo nano /etc/NetworkManager/NetworkManager.conf</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>注释 <code>dns=dnsmasq</code> 这一行：</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">dns=dnsmasq</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>保存文件。</p>
+</li>
+<li><p>重启NetworkManager 和 Docker。</p>
+ <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"> $ sudo restart network-manager</span><br><span class="line">$ sudo restart docker</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="Configure-Docker-to-start-on-boot"><a href="#Configure-Docker-to-start-on-boot" class="headerlink" title="Configure Docker to start on boot"></a>Configure Docker to start on boot</h3><p>Ubuntu 使用 <code>systemd</code> 作为他的boot and service 管理器在 <code>15.04</code> 版本以上，使用<code>upstart</code> 在版本 <code>14.10</code>及以下。</p>
+<p>对于 <code>15.04</code> 及以上版本，要配置<code>docker</code> 守护进程在启动时就运行，执行：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo systemctl <span class="built_in">enable</span> docker</span><br></pre></td></tr></table></figure>
+
+<p>对于 <code>14.10</code> 及其以下版本在安装的过程中已经自动配置 <code>upstart</code> 开机自动启动。</p>
+<h2 id="Upgrade-Docker"><a href="#Upgrade-Docker" class="headerlink" title="Upgrade Docker"></a>Upgrade Docker</h2><p>使用 <code>apt-get</code>安装最新版本的Docker:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get upgrade docker-engine</span><br></pre></td></tr></table></figure>
+
+<h2 id="Uninstallation"><a href="#Uninstallation" class="headerlink" title="Uninstallation"></a>Uninstallation</h2><p>卸载Docker安装包：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get purge docker-engine</span><br></pre></td></tr></table></figure>
+
+<p>要卸载Docker安装包和依赖，下面的命令已不再需要：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ sudo apt-get autoremove --purge docker-engine</span><br></pre></td></tr></table></figure>
+
+<p>上述命令不会删除主机上的镜像，容器，卷或用户创建的配置文件。 如果要删除所有镜像，容器和卷，请运行以下命令：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ rm -rf /var/lib/docker</span><br></pre></td></tr></table></figure>
+
+<p>你必需手动的删除用户配置文件。</p>
+
+    </div>
+
+    
+    
+    
+        <div class="reward-container">
+  <div></div>
+  <button onclick="var qr = document.getElementById('qr'); qr.style.display = (qr.style.display === 'none') ? 'block' : 'none';">
+    Donate
+  </button>
+  <div id="qr" style="display: none;">
+      
+      <div style="display: inline-block;">
+        <img src="/images/wepay.jpeg" alt="ovack WeChat Pay">
+        <p>WeChat Pay</p>
+      </div>
+
+  </div>
+</div>
+
+        
+
+<div>
+<ul class="post-copyright">
+  <li class="post-copyright-author">
+    <strong>Post author:  </strong>ovack
+  </li>
+  <li class="post-copyright-link">
+    <strong>Post link: </strong>
+    <a href="https://ovack.com/2016/10/12/install-docker-on-ubuntu/" title="在Ubuntu上安装Docker">https://ovack.com/2016/10/12/install-docker-on-ubuntu/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>Copyright Notice:  </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC</a> unless stating additionally.
+  </li>
+</ul>
+</div>
+
+        
+
+  <div class="followme">
+    <p>Welcome to my other publishing channels</p>
+
+    <div class="social-list">
+
+        <div class="social-item">
+          <a target="_blank" class="social-link" href="https://twitter.com/OvackChen">
+            <span class="icon">
+              <i class="fab fa-twitter"></i>
+            </span>
+
+            <span class="label">Twitter</span>
+          </a>
+        </div>
+    </div>
+  </div>
+
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2016/06/06/fast-download/" rel="prev" title="在中国快速下载某些软件">
+      <i class="fa fa-chevron-left"></i> 在中国快速下载某些软件
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2016/10/12/Installation-on-redhat-enterprise-linux/" rel="next" title="在redhat上安装Docker">
+      在redhat上安装Docker <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Ubuntu"><span class="nav-number">1.</span> <span class="nav-text">Ubuntu</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Prerequisites"><span class="nav-number">1.1.</span> <span class="nav-text">Prerequisites</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Update-your-apt-sources"><span class="nav-number">1.1.1.</span> <span class="nav-text">Update your apt sources</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Prerequisites-by-Ubuntu-Version"><span class="nav-number">1.1.2.</span> <span class="nav-text">Prerequisites by Ubuntu Version</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Ubuntu-Precise-12-04-LTS"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">Ubuntu Precise 12.04 (LTS)</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Install"><span class="nav-number">1.2.</span> <span class="nav-text">Install</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Optional-configurations"><span class="nav-number">1.3.</span> <span class="nav-text">Optional configurations</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Create-a-Docker-group"><span class="nav-number">1.3.1.</span> <span class="nav-text">Create a Docker group</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Adjust-memory-and-swap-accounting"><span class="nav-number">1.3.2.</span> <span class="nav-text">Adjust memory and swap accounting</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Enable-UFW-forwarding"><span class="nav-number">1.3.3.</span> <span class="nav-text">Enable UFW forwarding</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configure-a-DNS-server-for-use-by-Docker"><span class="nav-number">1.3.4.</span> <span class="nav-text">Configure a DNS server for use by Docker</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Configure-Docker-to-start-on-boot"><span class="nav-number">1.3.5.</span> <span class="nav-text">Configure Docker to start on boot</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Upgrade-Docker"><span class="nav-number">1.4.</span> <span class="nav-text">Upgrade Docker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Uninstallation"><span class="nav-number">1.5.</span> <span class="nav-text">Uninstallation</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="ovack"
+      src="/images/base/avatar.jpg">
+  <p class="site-author-name" itemprop="name">ovack</p>
+  <div class="site-description" itemprop="description">只是个记事本～～～🗒</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ovack" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ovack" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:youfengtec@gmail.com" title="E-Mail → mailto:youfengtec@gmail.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://twitter.com/OvackChen" title="Twitter → https:&#x2F;&#x2F;twitter.com&#x2F;OvackChen" rel="noopener" target="_blank"><i class="fab fa-twitter fa-fw"></i>Twitter</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc/4.0/deed.zh" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">ovack</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
